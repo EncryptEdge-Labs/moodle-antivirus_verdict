@@ -129,6 +129,21 @@ class scan_presenter {
     }
 
     /**
+     * Status badge markup for table cells (label plus tone class).
+     *
+     * @param string $status Stored status.
+     * @return string Safe HTML.
+     */
+    public static function status_badge_html(string $status): string {
+        $label = self::status_label($status);
+        $class = self::status_css_class($status);
+        return \html_writer::span(
+            \html_writer::span('', 'antivirus-verdict-dot') . s($label),
+            $class
+        );
+    }
+
+    /**
      * Detection summary, or empty when counts are unknown.
      *
      * Null counts are not displayed as zero.

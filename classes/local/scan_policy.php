@@ -97,4 +97,38 @@ class scan_policy {
         }
         return self::ASYNC_ENFORCEMENT_DEFAULT;
     }
+
+    /**
+     * Human-readable label for a stored plugin_config policy value (UI only).
+     *
+     * @param string $setting Config key (scanscope, unknownpolicy, asyncenforcement, …).
+     * @param string $value Stored value.
+     * @return string
+     */
+    public static function config_value_label(string $setting, string $value): string {
+        switch ($setting) {
+            case 'scanscope':
+                return scan_scope::normalise($value) === scan_scope::SELECTED_AREAS
+                    ? get_string('scanscope_selectedareas', 'antivirus_verdict')
+                    : get_string('scanscope_everyupload', 'antivirus_verdict');
+            case 'asyncenforcement':
+                return self::normalise_async_enforcement($value) === self::REPORT
+                    ? get_string('policy_reportonly', 'antivirus_verdict')
+                    : get_string('policy_quarantine', 'antivirus_verdict');
+            case 'providererrorpolicy':
+                return self::normalise_provider_error($value) === self::REPORT
+                    ? get_string('policy_report', 'antivirus_verdict')
+                    : get_string('policy_block', 'antivirus_verdict');
+            case 'unknownpolicy':
+                return self::normalise_allow_block($value, self::UNKNOWN_DEFAULT) === self::BLOCK
+                    ? get_string('policy_block', 'antivirus_verdict')
+                    : get_string('policy_allow', 'antivirus_verdict');
+            case 'suspiciouspolicy':
+                return self::normalise_allow_block($value, self::SUSPICIOUS_DEFAULT) === self::BLOCK
+                    ? get_string('policy_block', 'antivirus_verdict')
+                    : get_string('policy_allow', 'antivirus_verdict');
+            default:
+                return $value;
+        }
+    }
 }

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Administrator overview templatable.
+ * Security overview templatable (site managers and teachers with access share this UI).
  *
  * @package   antivirus_verdict
  * @copyright 2026 M. AFZAL RIAZ, POWERED BY ENCRYPTEDGE LABS LIMITED
@@ -359,25 +359,35 @@ class overview implements \renderable, \templatable {
     /**
      * Policy rows with swatch flags for the overview.
      *
-     * @param array{unknownpolicy:string,suspiciouspolicy:string,providererrorpolicy:string} $policies Policies.
+     * @param array $policies Live gate policy values from overview_service::live_policies().
      * @return array
      */
     private function policy_rows(array $policies): array {
         return [
             $this->policy_row(
                 get_string('unknownpolicy', 'antivirus_verdict'),
-                'unknown',
+                'unknownpolicy',
                 $policies['unknownpolicy']
             ),
             $this->policy_row(
                 get_string('suspiciouspolicy', 'antivirus_verdict'),
-                'suspicious',
+                'suspiciouspolicy',
                 $policies['suspiciouspolicy']
             ),
             $this->policy_row(
                 get_string('providererrorpolicy', 'antivirus_verdict'),
-                'providererror',
+                'providererrorpolicy',
                 $policies['providererrorpolicy']
+            ),
+            $this->policy_row(
+                get_string('scanscope', 'antivirus_verdict'),
+                'scanscope',
+                $policies['scanscope']
+            ),
+            $this->policy_row(
+                get_string('asyncenforcement', 'antivirus_verdict'),
+                'asyncenforcement',
+                $policies['asyncenforcement']
             ),
         ];
     }
@@ -386,22 +396,52 @@ class overview implements \renderable, \templatable {
      * One live-policy row.
      *
      * @param string $label Policy name.
-     * @param string $kind unknown|suspicious|providererror
+     * @param string $kind Config key for scan_policy::config_value_label.
      * @param string $value Stored policy.
      * @return array
      */
     private function policy_row(string $label, string $kind, string $value): array {
-        $isreport = $kind === 'providererror' && $value === scan_policy::REPORT;
-        $isblock = $kind === 'providererror'
-            ? $value !== scan_policy::REPORT
-            : $value === scan_policy::BLOCK;
+        $swatch = 'allow';
+        if ($kind === 'providererrorpolicy') {
+            $swatch = scan_policy::normalise_provider_error($value) === scan_policy::REPORT ? 'report' : 'block';
+        } else if ($kind === 'unknownpolicy' || $kind === 'suspiciouspolicy') {
+            $default = $kind === 'unknownpolicy'
+                ? scan_policy::UNKNOWN_DEFAULT
+                : scan_policy::SUSPICIOUS_DEFAULT;
+            $swatch = scan_policy::normalise_allow_block($value, $default) === scan_policy::BLOCK ? 'block' : 'allow';
+        } else if ($kind === 'scanscope') {
+            $swatch = \antivirus_verdict\local\scan_scope::normalise($value) === \antivirus_verdict\local\scan_scope::SELECTED_AREAS
+                ? 'block'
+                : 'allow';
+        } else if ($kind === 'asyncenforcement') {
+            $swatch = scan_policy::normalise_async_enforcement($value) === scan_policy::REPORT ? 'report' : 'block';
+        }
         return [
             'label' => $label,
-            'value' => $this->policy_value_label($kind, $value),
-            'isallow' => !$isblock && !$isreport,
-            'isblock' => $isblock,
-            'isreport' => $isreport,
+            'value' => $this->overview_live_policy_value($kind, $value),
+            'swatch' => $swatch,
         ];
+    }
+
+    /**
+     * Live gate policy value labels for the overview card (short copy where needed).
+     *
+     * @param string $kind Config key.
+     * @param string $value Stored value.
+     * @return string
+     */
+    private function overview_live_policy_value(string $kind, string $value): string {
+        if ($kind === 'providererrorpolicy') {
+            return scan_policy::normalise_provider_error($value) === scan_policy::REPORT
+                ? get_string('dash_policy_report', 'antivirus_verdict')
+                : get_string('policy_block', 'antivirus_verdict');
+        }
+        if ($kind === 'asyncenforcement') {
+            return scan_policy::normalise_async_enforcement($value) === scan_policy::REPORT
+                ? get_string('dash_policy_reportonly', 'antivirus_verdict')
+                : get_string('policy_quarantine', 'antivirus_verdict');
+        }
+        return scan_policy::config_value_label($kind, $value);
     }
 
     /**
@@ -483,24 +523,6 @@ class overview implements \renderable, \templatable {
         return get_string($code, 'antivirus_verdict', (object) [
             'item' => get_string('pluginname', 'antivirus_verdict'),
         ]);
-    }
-
-    /**
-     * Policy value as a readable label.
-     *
-     * @param string $kind unknown|suspicious|providererror
-     * @param string $value Stored policy.
-     * @return string
-     */
-    private function policy_value_label(string $kind, string $value): string {
-        if ($kind === 'providererror') {
-            return $value === scan_policy::REPORT
-                ? get_string('policy_report', 'antivirus_verdict')
-                : get_string('policy_block', 'antivirus_verdict');
-        }
-        return $value === scan_policy::BLOCK
-            ? get_string('policy_block', 'antivirus_verdict')
-            : get_string('policy_allow', 'antivirus_verdict');
     }
 
     /**

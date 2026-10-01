@@ -43,6 +43,35 @@ final class file_coverage_registry_test extends \advanced_testcase {
     }
 
     /**
+     * Indirect native-gate rows appear first in a stable order.
+     */
+    public function test_rows_sort_indirect_native_gate_first(): void {
+        $this->resetAfterTest();
+        $rows = file_coverage_registry::rows();
+        $indirect = array_values(array_filter(
+            $rows,
+            static fn(array $row): bool => $row['mechanism'] === file_coverage_registry::MECHANISM_INDIRECT
+        ));
+        $this->assertCount(3, $indirect);
+        $this->assertSame(
+            ['h5p_package', 'mod_resource_content', 'repository_upload'],
+            array_column($indirect, 'id')
+        );
+        $firstnon = null;
+        foreach ($rows as $row) {
+            if ($row['mechanism'] !== file_coverage_registry::MECHANISM_INDIRECT) {
+                $firstnon = $row['id'];
+                break;
+            }
+        }
+        $this->assertNotNull($firstnon);
+        $lastindirect = $indirect[2]['id'];
+        $lastindex = array_search($lastindirect, array_column($rows, 'id'), true);
+        $firstnonindex = array_search($firstnon, array_column($rows, 'id'), true);
+        $this->assertLessThan($firstnonindex, $lastindex);
+    }
+
+    /**
      * Rows compute blocked state when credentials are missing.
      */
     public function test_rows_blocked_without_credentials(): void {

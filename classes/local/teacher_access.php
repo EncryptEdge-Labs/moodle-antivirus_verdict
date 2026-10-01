@@ -206,12 +206,36 @@ class teacher_access {
         if (self::allows($page)) {
             return;
         }
+        $capability = 'antivirus/verdict:viewhistory';
+        if (isset(self::PAGES[$page]['capability']) && self::PAGES[$page]['capability'] !== '') {
+            $capability = self::PAGES[$page]['capability'];
+        }
         throw new \required_capability_exception(
             \context_system::instance(),
-            'antivirus/verdict:viewreports',
+            $capability,
             'nopermissions',
             ''
         );
+    }
+
+    /**
+     * Gate scan detail for teachers: manual scan owners may open their row without history access.
+     *
+     * @param \stdClass $scan Scan row.
+     */
+    public static function require_scan_detail(\stdClass $scan): void {
+        global $USER;
+
+        if (scan_access::can_manage_site()) {
+            return;
+        }
+        if (
+            scan_access::can_view_own_manual_scan($scan, (int) $USER->id)
+            && self::allows('manualscan')
+        ) {
+            return;
+        }
+        self::require_page('scanhistory');
     }
 
     /**

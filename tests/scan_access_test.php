@@ -116,6 +116,156 @@ final class scan_access_test extends \advanced_testcase {
     }
 
     /**
+     * Site-level manual scans use system context; teachers still see their own row.
+     */
+    public function test_owner_can_view_site_level_manual_scan(): void {
+        $this->resetAfterTest();
+        [$course1] = $this->prepare_courses();
+        $teacher = $this->getDataGenerator()->create_and_enrol($course1, 'editingteacher');
+        $system = \context_system::instance();
+        $repo = new scan_repository();
+        $now = time();
+        $scan = (object) [
+            'fileid' => 0,
+            'contenthash' => sha1('site.bin'),
+            'pathnamehash' => sha1('site-level'),
+            'contextid' => $system->id,
+            'courseid' => 0,
+            'component' => 'antivirus_verdict',
+            'filearea' => 'manual',
+            'itemid' => 1,
+            'filepath' => '/',
+            'filename' => 'site.bin',
+            'userid' => $teacher->id,
+            'initiatedby' => $teacher->id,
+            'source' => scan_source::MANUAL,
+            'sha256' => '',
+            'filesize' => 10,
+            'mimetype' => 'application/octet-stream',
+            'status' => scan_status::PENDING,
+            'phase' => scan_phase::QUEUED,
+            'vtanalysisid' => null,
+            'vtfileid' => null,
+            'malicious' => null,
+            'suspicious' => null,
+            'undetected' => null,
+            'harmless' => null,
+            'timeout' => null,
+            'totalengines' => null,
+            'errorcode' => null,
+            'pollattempts' => 0,
+            'timelastpoll' => 0,
+            'timesubmitted' => 0,
+            'timecreated' => $now,
+            'timemodified' => $now,
+            'timecompleted' => 0,
+        ];
+        $scan->id = $repo->insert($scan);
+        $this->assertFalse(has_capability('antivirus/verdict:scan', $system, $teacher->id));
+        $this->assertTrue(scan_access::can_view_own_manual_scan($scan, $teacher->id));
+        $this->assertTrue(scan_access::can_view_scan($scan, $teacher->id));
+    }
+
+    /**
+     * Course scans stay visible when the row context id is system-level.
+     */
+    public function test_course_scan_visible_via_courseid_not_contextid(): void {
+        $this->resetAfterTest();
+        [$course1] = $this->prepare_courses();
+        $teacher = $this->getDataGenerator()->create_and_enrol($course1, 'editingteacher');
+        $system = \context_system::instance();
+        $repo = new scan_repository();
+        $now = time();
+        $scan = (object) [
+            'fileid' => 0,
+            'contenthash' => sha1('course-context.bin'),
+            'pathnamehash' => sha1('course-context'),
+            'contextid' => $system->id,
+            'courseid' => $course1->id,
+            'component' => 'assignsubmission_file',
+            'filearea' => 'submission_files',
+            'itemid' => 1,
+            'filepath' => '/',
+            'filename' => 'course-context.bin',
+            'userid' => $teacher->id,
+            'initiatedby' => 0,
+            'source' => scan_source::ASSIGN,
+            'sha256' => '',
+            'filesize' => 10,
+            'mimetype' => 'application/octet-stream',
+            'status' => scan_status::CLEAN,
+            'phase' => scan_phase::COMPLETED,
+            'vtanalysisid' => null,
+            'vtfileid' => null,
+            'malicious' => 0,
+            'suspicious' => null,
+            'undetected' => null,
+            'harmless' => null,
+            'timeout' => null,
+            'totalengines' => 10,
+            'errorcode' => null,
+            'pollattempts' => 0,
+            'timelastpoll' => 0,
+            'timesubmitted' => 0,
+            'timecreated' => $now,
+            'timemodified' => $now,
+            'timecompleted' => $now,
+        ];
+        $scan->id = $repo->insert($scan);
+        $this->assertFalse(has_capability('antivirus/verdict:viewhistory', $system, $teacher->id));
+        $this->assertTrue(scan_access::can_view_scan($scan, $teacher->id));
+    }
+
+    /**
+     * Teachers may rescan their own site-level manual scans when they hold rescan in a course.
+     */
+    public function test_teacher_can_rescan_own_site_manual_scan(): void {
+        $this->resetAfterTest();
+        [$course1] = $this->prepare_courses();
+        $teacher = $this->getDataGenerator()->create_and_enrol($course1, 'editingteacher');
+        $system = \context_system::instance();
+        $repo = new scan_repository();
+        $now = time();
+        $scan = (object) [
+            'fileid' => 0,
+            'contenthash' => sha1('rescan-site.bin'),
+            'pathnamehash' => sha1('rescan-site'),
+            'contextid' => $system->id,
+            'courseid' => 0,
+            'component' => 'antivirus_verdict',
+            'filearea' => 'manual',
+            'itemid' => 1,
+            'filepath' => '/',
+            'filename' => 'rescan-site.bin',
+            'userid' => $teacher->id,
+            'initiatedby' => $teacher->id,
+            'source' => scan_source::MANUAL,
+            'sha256' => '',
+            'filesize' => 10,
+            'mimetype' => 'application/octet-stream',
+            'status' => scan_status::CLEAN,
+            'phase' => scan_phase::COMPLETED,
+            'vtanalysisid' => null,
+            'vtfileid' => null,
+            'malicious' => 0,
+            'suspicious' => null,
+            'undetected' => null,
+            'harmless' => null,
+            'timeout' => null,
+            'totalengines' => 10,
+            'errorcode' => null,
+            'pollattempts' => 0,
+            'timelastpoll' => 0,
+            'timesubmitted' => 0,
+            'timecreated' => $now,
+            'timemodified' => $now,
+            'timecompleted' => $now,
+        ];
+        $scan->id = $repo->insert($scan);
+        $this->assertTrue(scan_access::can_rescan($scan, $teacher->id));
+    }
+
+    /**
      * Guessed scan ids do not become visible without capability.
      */
     public function test_guessed_id_is_not_visible(): void {

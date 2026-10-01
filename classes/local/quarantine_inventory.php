@@ -122,10 +122,11 @@ class quarantine_inventory {
         foreach ($scans as $scan) {
             $name = (string) $scan->filename;
             $match = $infected[$name] ?? null;
+            $status = (string) $scan->status;
             $rows[] = [
                 'scanid' => (int) $scan->id,
                 'filename' => $name,
-                'status' => scan_presenter::status_label((string) $scan->status),
+                'statushtml' => scan_presenter::status_badge_html($status),
                 'enforcement' => scan_presenter::enforcement_label((string) $scan->enforcement),
                 'time' => scan_presenter::format_time((int) $scan->timecompleted),
                 'viewurl' => (new \moodle_url('/lib/antivirus/verdict/view.php', ['id' => (int) $scan->id]))->out(false),

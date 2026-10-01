@@ -373,13 +373,15 @@ class overview_service {
     /**
      * Live gate policies currently consumed by runtime.
      *
-     * @return array{unknownpolicy:string,suspiciouspolicy:string,providererrorpolicy:string}
+     * @return array<string,string>
      */
     public function live_policies(): array {
         return [
+            'scanscope' => $this->config->scanscope,
             'unknownpolicy' => $this->config->unknownpolicy,
             'suspiciouspolicy' => $this->config->suspiciouspolicy,
             'providererrorpolicy' => $this->config->providererrorpolicy,
+            'asyncenforcement' => $this->config->asyncenforcement,
         ];
     }
 }

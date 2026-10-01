@@ -140,44 +140,6 @@ if (!empty($ADMIN) && $ADMIN->fulltree && !empty($settings)) {
     ));
 
     $settings->add(new admin_setting_configcheckbox(
-        'antivirus_verdict/restorescan',
-        new lang_string('restorescan', 'antivirus_verdict'),
-        new lang_string('restorescan_desc', 'antivirus_verdict'),
-        1
-    ));
-
-    $settings->add(new admin_setting_configcheckbox(
-        'antivirus_verdict/archivescan',
-        new lang_string('archivescan', 'antivirus_verdict'),
-        new lang_string('archivescan_desc', 'antivirus_verdict'),
-        1
-    ));
-
-    $settings->add(new admin_setting_configtext(
-        'antivirus_verdict/archivemaxmembers',
-        new lang_string('archivemaxmembers', 'antivirus_verdict'),
-        new lang_string('archivemaxmembers_desc', 'antivirus_verdict'),
-        (string) \antivirus_verdict\local\archive_limits::DEFAULT_MAX_MEMBERS,
-        PARAM_INT
-    ));
-
-    $settings->add(new admin_setting_configtext(
-        'antivirus_verdict/archivemaxdepth',
-        new lang_string('archivemaxdepth', 'antivirus_verdict'),
-        new lang_string('archivemaxdepth_desc', 'antivirus_verdict'),
-        (string) \antivirus_verdict\local\archive_limits::DEFAULT_MAX_DEPTH,
-        PARAM_INT
-    ));
-
-    $settings->add(new admin_setting_configtext(
-        'antivirus_verdict/archivemaxextractedmb',
-        new lang_string('archivemaxextractedmb', 'antivirus_verdict'),
-        new lang_string('archivemaxextractedmb_desc', 'antivirus_verdict'),
-        (string) \antivirus_verdict\local\archive_limits::DEFAULT_MAX_EXTRACTED_MB,
-        PARAM_INT
-    ));
-
-    $settings->add(new admin_setting_configcheckbox(
         'antivirus_verdict/datascan',
         new lang_string('datascan', 'antivirus_verdict'),
         new lang_string('datascan_desc', 'antivirus_verdict'),
@@ -213,32 +175,53 @@ if (!empty($ADMIN) && $ADMIN->fulltree && !empty($settings)) {
     ));
 
     $settings->add(new admin_setting_configcheckbox(
-        'antivirus_verdict/notifymalicious',
-        new lang_string('notifymalicious', 'antivirus_verdict'),
-        new lang_string('notifymalicious_desc', 'antivirus_verdict'),
+        'antivirus_verdict/restorescan',
+        new lang_string('restorescan', 'antivirus_verdict'),
+        new lang_string('restorescan_desc', 'antivirus_verdict'),
         1
     ));
 
-    $settings->add(new admin_setting_configcheckbox(
-        'antivirus_verdict/notifysuspicious',
-        new lang_string('notifysuspicious', 'antivirus_verdict'),
-        new lang_string('notifysuspicious_desc', 'antivirus_verdict'),
-        0
+    $settings->add(new admin_setting_heading(
+        'antivirus_verdict/archiveheading',
+        new lang_string('settingsgroup_archive', 'antivirus_verdict'),
+        ''
     ));
 
     $settings->add(new admin_setting_configcheckbox(
-        'antivirus_verdict/notifyerror',
-        new lang_string('notifyerror', 'antivirus_verdict'),
-        new lang_string('notifyerror_desc', 'antivirus_verdict'),
-        0
+        'antivirus_verdict/archivescan',
+        new lang_string('archivescan', 'antivirus_verdict'),
+        new lang_string('archivescan_desc', 'antivirus_verdict'),
+        1
     ));
 
     $settings->add(new admin_setting_configtext(
-        'antivirus_verdict/maxfilesize',
-        new lang_string('maxfilesize', 'antivirus_verdict'),
-        new lang_string('maxfilesize_desc', 'antivirus_verdict'),
-        100,
+        'antivirus_verdict/archivemaxmembers',
+        new lang_string('archivemaxmembers', 'antivirus_verdict'),
+        new lang_string('archivemaxmembers_desc', 'antivirus_verdict'),
+        (string) \antivirus_verdict\local\archive_limits::DEFAULT_MAX_MEMBERS,
         PARAM_INT
+    ));
+
+    $settings->add(new admin_setting_configtext(
+        'antivirus_verdict/archivemaxdepth',
+        new lang_string('archivemaxdepth', 'antivirus_verdict'),
+        new lang_string('archivemaxdepth_desc', 'antivirus_verdict'),
+        (string) \antivirus_verdict\local\archive_limits::DEFAULT_MAX_DEPTH,
+        PARAM_INT
+    ));
+
+    $settings->add(new admin_setting_configtext(
+        'antivirus_verdict/archivemaxextractedmb',
+        new lang_string('archivemaxextractedmb', 'antivirus_verdict'),
+        new lang_string('archivemaxextractedmb_desc', 'antivirus_verdict'),
+        (string) \antivirus_verdict\local\archive_limits::DEFAULT_MAX_EXTRACTED_MB,
+        PARAM_INT
+    ));
+
+    $settings->add(new admin_setting_heading(
+        'antivirus_verdict/policiesheading',
+        new lang_string('settingsgroup_policies', 'antivirus_verdict'),
+        ''
     ));
 
     $allowblock = [
@@ -281,6 +264,61 @@ if (!empty($ADMIN) && $ADMIN->fulltree && !empty($settings)) {
         ]
     ));
 
+    $settings->add(new admin_setting_heading(
+        'antivirus_verdict/notificationsheading',
+        new lang_string('settingsgroup_notifications', 'antivirus_verdict'),
+        ''
+    ));
+
+    $settings->add(new admin_setting_configcheckbox(
+        'antivirus_verdict/notifymalicious',
+        new lang_string('notifymalicious', 'antivirus_verdict'),
+        new lang_string('notifymalicious_desc', 'antivirus_verdict'),
+        1
+    ));
+
+    $settings->add(new admin_setting_configcheckbox(
+        'antivirus_verdict/notifysuspicious',
+        new lang_string('notifysuspicious', 'antivirus_verdict'),
+        new lang_string('notifysuspicious_desc', 'antivirus_verdict'),
+        0
+    ));
+
+    $settings->add(new admin_setting_configcheckbox(
+        'antivirus_verdict/notifyerror',
+        new lang_string('notifyerror', 'antivirus_verdict'),
+        new lang_string('notifyerror_desc', 'antivirus_verdict'),
+        0
+    ));
+
+    $settings->add(new admin_setting_heading(
+        'antivirus_verdict/storageheading',
+        new lang_string('settingsgroup_storage', 'antivirus_verdict'),
+        ''
+    ));
+
+    $settings->add(new admin_setting_configtext(
+        'antivirus_verdict/maxfilesize',
+        new lang_string('maxfilesize', 'antivirus_verdict'),
+        new lang_string('maxfilesize_desc', 'antivirus_verdict'),
+        100,
+        PARAM_INT
+    ));
+
+    $settings->add(new admin_setting_configtext(
+        'antivirus_verdict/scanretentiondays',
+        new lang_string('scanretentiondays', 'antivirus_verdict'),
+        new lang_string('scanretentiondays_desc', 'antivirus_verdict'),
+        (string) \antivirus_verdict\local\scan_retention::DEFAULT_DAYS,
+        PARAM_INT
+    ));
+
+    $settings->add(new admin_setting_heading(
+        'antivirus_verdict/limitsheading',
+        new lang_string('settingsgroup_limits', 'antivirus_verdict'),
+        ''
+    ));
+
     $settings->add(new admin_setting_configtext(
         'antivirus_verdict/lookupceiling',
         new lang_string('lookupceiling', 'antivirus_verdict'),
@@ -300,14 +338,6 @@ if (!empty($ADMIN) && $ADMIN->fulltree && !empty($settings)) {
         new lang_string('pollceiling', 'antivirus_verdict'),
         new lang_string('pollceiling_desc', 'antivirus_verdict'),
         0,
-        PARAM_INT
-    ));
-
-    $settings->add(new admin_setting_configtext(
-        'antivirus_verdict/scanretentiondays',
-        new lang_string('scanretentiondays', 'antivirus_verdict'),
-        new lang_string('scanretentiondays_desc', 'antivirus_verdict'),
-        (string) \antivirus_verdict\local\scan_retention::DEFAULT_DAYS,
         PARAM_INT
     ));
 

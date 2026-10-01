@@ -1266,6 +1266,33 @@ td.antivirus-verdict-filename span.antivirus-verdict-history-filename {
     font-weight: 600;
 }
 
+.antivirus-verdict-quarantine-table td.antivirus-verdict-filename,
+.antivirus-verdict-history-table td.antivirus-verdict-filename,
+.antivirus-verdict-coverage-table td.antivirus-verdict-filename {
+    width: 30%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.antivirus-verdict-table td.antivirus-verdict-verdict-cell {
+    width: 14%;
+    min-width: 6.5rem;
+    max-width: 11rem;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    vertical-align: middle;
+}
+
+.antivirus-verdict-table td.antivirus-verdict-verdict-cell .antivirus-verdict-badge {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
 .antivirus-verdict-time,
 td.antivirus-verdict-time,
 .antivirus-verdict-table .c4,
@@ -3693,25 +3720,37 @@ html[data-antivirus-verdict-theme="light"] .antivirus-verdict-ov {
 }
 
 .antivirus-verdict-ov-policy {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, auto) 6px;
     align-items: center;
-    justify-content: space-between;
+    column-gap: 10px;
+    row-gap: 4px;
     font-size: 12px;
-    gap: 10px;
-    flex-wrap: wrap;
+    min-width: 0;
 }
 
 .antivirus-verdict-ov-policy-name {
     color: var(--ov-dim);
     min-width: 0;
     overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.35;
 }
-.antivirus-verdict-ov-policy-val {
+
+.antivirus-verdict-ov-policy-text {
     font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 6px;
     font-size: 11px;
+    text-align: right;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.35;
+    justify-self: end;
+}
+
+.antivirus-verdict-ov-policy .antivirus-verdict-ov-swatch {
+    justify-self: end;
+    flex-shrink: 0;
 }
 
 .antivirus-verdict-ov-swatch {

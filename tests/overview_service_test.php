@@ -72,6 +72,51 @@ final class overview_service_test extends \advanced_testcase {
     }
 
     /**
+     * Teachers with overview access see the same live gate policy card as site managers.
+     */
+    public function test_teacher_overview_live_policies_match_admin(): void {
+        global $CFG, $PAGE;
+
+        $this->resetAfterTest();
+        $CFG->antiviruses = 'verdict';
+        set_config('apikey', 'unit-test-key', 'antivirus_verdict');
+        set_config('teacheraccess', 1, 'antivirus_verdict');
+        set_config('teacherpageoverview', 1, 'antivirus_verdict');
+        set_config('scanscope', \antivirus_verdict\local\scan_scope::SELECTED_AREAS, 'antivirus_verdict');
+        set_config('asyncenforcement', 'report', 'antivirus_verdict');
+
+        $course = $this->getDataGenerator()->create_course();
+        $teacher = $this->getDataGenerator()->create_and_enrol($course, 'editingteacher');
+
+        $PAGE->set_url(new \moodle_url('/lib/antivirus/verdict/index.php'));
+        $PAGE->set_context(\context_system::instance());
+        $renderer = $PAGE->get_renderer('antivirus_verdict');
+        $context = \context_system::instance();
+
+        $this->setAdminUser();
+        $adminexported = (new overview(overview_service::from_site_config(), $context))
+            ->export_for_template($renderer);
+
+        $this->setUser($teacher);
+        $teacherservice = overview_service::from_site_config()->for_viewer((int) $teacher->id);
+        $teacherexported = (new overview($teacherservice, $context))
+            ->export_for_template($renderer);
+
+        $this->assertCount(5, $adminexported['livepolicies']);
+        $this->assertSame($adminexported['livepolicies'], $teacherexported['livepolicies']);
+        $this->assertSame(
+            get_string('scanscope_selectedareas', 'antivirus_verdict'),
+            $teacherexported['livepolicies'][3]['value']
+        );
+        $this->assertSame(
+            get_string('dash_policy_reportonly', 'antivirus_verdict'),
+            $teacherexported['livepolicies'][4]['value']
+        );
+        $this->assertSame('block', $teacherexported['livepolicies'][3]['swatch']);
+        $this->assertSame('report', $teacherexported['livepolicies'][4]['swatch']);
+    }
+
+    /**
      * A teacher's overview counts include only courses they teach.
      */
     public function test_teacher_overview_counts_stay_in_their_courses(): void {
@@ -311,7 +356,20 @@ final class overview_service_test extends \advanced_testcase {
         $this->assertFalse($exported['hasenforcementevents']);
         $this->assertSame(get_string('dash_enforcementempty', 'antivirus_verdict'), $exported['enforcementemptytext']);
         $this->assertCount(5, $exported['pendingphases']);
-        $this->assertCount(3, $exported['livepolicies']);
+        $this->assertCount(5, $exported['livepolicies']);
+        $policylabels = array_column($exported['livepolicies'], 'label');
+        $this->assertSame(get_string('unknownpolicy', 'antivirus_verdict'), $policylabels[0]);
+        $this->assertSame(get_string('suspiciouspolicy', 'antivirus_verdict'), $policylabels[1]);
+        $this->assertSame(get_string('providererrorpolicy', 'antivirus_verdict'), $policylabels[2]);
+        $this->assertSame(get_string('scanscope', 'antivirus_verdict'), $policylabels[3]);
+        $this->assertSame(get_string('asyncenforcement', 'antivirus_verdict'), $policylabels[4]);
+        foreach ($exported['livepolicies'] as $policyrow) {
+            $this->assertContains($policyrow['swatch'], ['allow', 'block', 'report']);
+        }
+        $this->assertSame(
+            get_string('policy_quarantine', 'antivirus_verdict'),
+            $exported['livepolicies'][4]['value']
+        );
         $this->assertSame(1, $exported['pendingphases'][0]['count']);
         $this->assertFalse($exported['haserrorbreakdown']);
         $this->assertSame(0, $exported['archivemalicious']);

@@ -64,6 +64,7 @@ final class quarantine_inventory_test extends \advanced_testcase {
         $this->assertCount(1, $rows);
         $this->assertSame(1, $summary['quarantined']);
         $this->assertSame('reported.bin', $rows[0]['filename']);
+        $this->assertStringContainsString('antivirus-verdict-badge', $rows[0]['statushtml']);
 
         $PAGE->set_url(new \moodle_url('/lib/antivirus/verdict/quarantine.php'));
         $PAGE->set_context(\context_system::instance());

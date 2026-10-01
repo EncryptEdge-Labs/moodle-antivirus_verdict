@@ -33,8 +33,8 @@
         <div class="antivirus-verdict-banner" role="status">{{emptymessage}}</div>
     {{/isempty}}
     {{^isempty}}
-        <div class="antivirus-verdict-panel antivirus-verdict-panel--flush">
-            <table class="table generaltable antivirus-verdict-table">
+        <div class="antivirus-verdict-panel antivirus-verdict-panel--flush antivirus-verdict-quarantine-panel">
+            <table class="table generaltable antivirus-verdict-table antivirus-verdict-quarantine-table">
                 <thead>
                     <tr>
                         <th scope="col">{{columnfile}}</th>
@@ -49,7 +49,7 @@
                     {{#rows}}
                         <tr>
                             <td class="antivirus-verdict-filename" data-label="{{columnfile}}">{{filename}}</td>
-                            <td data-label="{{columnstatus}}">{{status}}</td>
+                            <td class="antivirus-verdict-verdict-cell" data-label="{{columnstatus}}">{{{statushtml}}}</td>
                             <td data-label="{{columnenforcement}}">{{enforcement}}</td>
                             <td class="antivirus-verdict-time" data-label="{{columntime}}">{{time}}</td>
                             <td data-label="{{columncore}}">{{#hascore}}{{coretime}}{{/hascore}}{{^hascore}}—{{/hascore}}</td>

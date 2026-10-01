@@ -31,11 +31,14 @@ require_login();
 $id = required_param('id', PARAM_INT);
 $repo = new \antivirus_verdict\local\scan_repository();
 $scan = $repo->get_by_id($id);
-if (!$scan || !\antivirus_verdict\local\scan_access::can_view_scan($scan)) {
-    $system = context_system::instance();
-    throw new required_capability_exception($system, 'antivirus/verdict:viewreports', 'nopermissions', '');
+if (!$scan) {
+    throw new moodle_exception('error_invalidrequest', 'antivirus_verdict');
 }
-\antivirus_verdict\local\teacher_access::require_page('scanhistory');
+if (!\antivirus_verdict\local\scan_access::can_view_scan($scan)) {
+    $context = \antivirus_verdict\local\scan_access::context_for_scan($scan);
+    throw new required_capability_exception($context, 'antivirus/verdict:viewhistory', 'nopermissions', '');
+}
+\antivirus_verdict\local\teacher_access::require_scan_detail($scan);
 
 $PAGE->set_url(new moodle_url('/lib/antivirus/verdict/view.php', ['id' => $id]));
 \antivirus_verdict\local\page::apply_site_application_chrome('scandetail');

@@ -238,6 +238,17 @@ class file_coverage_registry {
                 'title' => get_string('coveragerow_' . $def['id'], 'antivirus_verdict'),
             ]);
         }
+        usort($rows, static function (array $a, array $b): int {
+            $priority = static function (array $row): int {
+                return ($row['mechanism'] ?? '') === self::MECHANISM_INDIRECT ? 0 : 1;
+            };
+            $pa = $priority($a);
+            $pb = $priority($b);
+            if ($pa !== $pb) {
+                return $pa <=> $pb;
+            }
+            return strcmp((string) $a['id'], (string) $b['id']);
+        });
         return $rows;
     }
 

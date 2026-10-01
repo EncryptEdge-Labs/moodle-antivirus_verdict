@@ -1,7 +1,7 @@
 {{!
     @template antivirus_verdict/coverage
 
-    File coverage registry table for administrators.
+    File coverage registry table (site managers and teachers with access).
 
     Example context (json):
     {
@@ -31,7 +31,7 @@
         </div>
     </div>
     <div class="antivirus-verdict-panel antivirus-verdict-panel--flush">
-        <table class="table generaltable antivirus-verdict-table">
+        <table class="table generaltable antivirus-verdict-table antivirus-verdict-coverage-table">
             <caption class="visually-hidden">{{pagetitle}}</caption>
             <thead>
                 <tr>
@@ -50,7 +50,7 @@
                         </td>
                         <td data-label="{{columnarea}}">{{filearea}}</td>
                         <td data-label="{{columnmechanism}}">{{mechanism}}</td>
-                        <td data-label="{{columnstate}}"><span class="{{stateclass}}"><span class="antivirus-verdict-dot"></span>{{state}}</span></td>
+                        <td class="antivirus-verdict-verdict-cell" data-label="{{columnstate}}"><span class="{{stateclass}}"><span class="antivirus-verdict-dot"></span>{{state}}</span></td>
                     </tr>
                 {{/rows}}
             </tbody>

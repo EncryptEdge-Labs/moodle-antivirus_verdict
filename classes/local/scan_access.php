@@ -190,20 +190,50 @@ class scan_access {
             return true;
         }
 
-        $context = self::context_for_scan($scan);
-        if (
-            $scan->source === scan_source::MANUAL
-            && has_capability('antivirus/verdict:scan', $context, $userid)
-            && (
-                (int) $scan->userid === $userid
-                || (int) ($scan->initiatedby ?? 0) === $userid
-            )
-        ) {
+        if (self::can_view_own_manual_scan($scan, $userid)) {
             return true;
         }
 
+        $courseid = (int) ($scan->courseid ?? 0);
+        if ($courseid > 0) {
+            if (self::has_capability_at_course('antivirus/verdict:viewreports', $courseid, $userid)) {
+                return true;
+            }
+            if (self::has_capability_at_course('antivirus/verdict:viewhistory', $courseid, $userid)) {
+                return true;
+            }
+        }
+
+        $context = self::context_for_scan($scan);
         return has_capability('antivirus/verdict:viewreports', $context, $userid)
             || has_capability('antivirus/verdict:viewhistory', $context, $userid);
+    }
+
+    /**
+     * Whether the user may view a manual scan they queued (including site-level scans).
+     *
+     * Manual scans from Scan a file often use system context; :scan is course-level.
+     *
+     * @param \stdClass $scan Scan row.
+     * @param int|null $userid User id, or null for the current user.
+     * @return bool
+     */
+    public static function can_view_own_manual_scan(\stdClass $scan, ?int $userid = null): bool {
+        global $USER;
+        if ($userid === null) {
+            $userid = (int) $USER->id;
+        }
+        if ($scan->source !== scan_source::MANUAL) {
+            return false;
+        }
+        if ((int) $scan->userid !== $userid && (int) ($scan->initiatedby ?? 0) !== $userid) {
+            return false;
+        }
+        $context = self::context_for_scan($scan);
+        if (has_capability('antivirus/verdict:scan', $context, $userid)) {
+            return true;
+        }
+        return self::courseids_for('antivirus/verdict:scan', $userid) !== [];
     }
 
     /**
@@ -217,13 +247,28 @@ class scan_access {
      * @return bool
      */
     public static function can_rescan(\stdClass $scan, ?int $userid = null): bool {
+        global $USER;
+        if ($userid === null) {
+            $userid = (int) $USER->id;
+        }
         if (!self::can_view_scan($scan, $userid)) {
             return false;
         }
         if (self::can_manage_site($userid)) {
             return true;
         }
-        return has_capability('antivirus/verdict:rescan', self::context_for_scan($scan), $userid);
+        $courseid = (int) ($scan->courseid ?? 0);
+        if ($courseid > 0 && self::has_capability_at_course('antivirus/verdict:rescan', $courseid, $userid)) {
+            return true;
+        }
+        $context = self::context_for_scan($scan);
+        if (has_capability('antivirus/verdict:rescan', $context, $userid)) {
+            return true;
+        }
+        if (self::can_view_own_manual_scan($scan, $userid)) {
+            return self::courseids_for('antivirus/verdict:rescan', $userid) !== [];
+        }
+        return false;
     }
 
     /**
@@ -268,6 +313,26 @@ class scan_access {
 
         [$insql, $inparams] = $DB->get_in_or_equal($courseids, \SQL_PARAMS_NAMED, 'cid');
         return ["({$ownmanual} OR courseid {$insql})", $ownparams + $inparams];
+    }
+
+    /**
+     * Whether a course-level plugin capability applies for the user.
+     *
+     * @param string $capability Capability name.
+     * @param int $courseid Course id.
+     * @param int $userid User id.
+     * @return bool
+     */
+    public static function has_capability_at_course(string $capability, int $courseid, int $userid): bool {
+        if ($courseid <= 0) {
+            return false;
+        }
+        try {
+            $context = \context_course::instance($courseid);
+        } catch (\Exception $e) {
+            return false;
+        }
+        return has_capability($capability, $context, $userid);
     }
 
     /**

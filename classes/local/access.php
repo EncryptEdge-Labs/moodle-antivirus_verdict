@@ -94,7 +94,7 @@ class access {
         if (!self::has_any_plugin_capability($context)) {
             throw new \required_capability_exception(
                 $context,
-                'antivirus/verdict:viewreports',
+                'antivirus/verdict:viewhistory',
                 'nopermissions',
                 ''
             );

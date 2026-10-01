@@ -29,7 +29,7 @@ use renderer_base;
 
 
 /**
- * Administrator view of Verdict enforcement correlated with core quarantine.
+ * Quarantine inventory (site managers and teachers with access share this UI).
  */
 class quarantine_page implements \renderable, \templatable {
     /** @var quarantine_inventory Inventory service. */

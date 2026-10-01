@@ -29,7 +29,7 @@ use renderer_base;
 
 
 /**
- * Exports the coverage registry for administrators.
+ * Exports the coverage registry (site managers and teachers with access share this UI).
  */
 class coverage_page implements \renderable, \templatable {
     /**

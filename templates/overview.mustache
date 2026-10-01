@@ -1,7 +1,7 @@
 {{!
     @template antivirus_verdict/overview
 
-    Administrator security overview. All values are escaped by Mustache.
+    Security overview for site managers and teachers (same template). All values are escaped by Mustache.
 
     Example context (json):
     {
@@ -283,12 +283,8 @@
                     {{#livepolicies}}
                         <div class="antivirus-verdict-ov-policy">
                             <span class="antivirus-verdict-ov-policy-name">{{label}}</span>
-                            <span class="antivirus-verdict-ov-policy-val">
-                                {{#isallow}}<span class="antivirus-verdict-ov-swatch antivirus-verdict-ov-swatch--allow"></span>{{/isallow}}
-                                {{#isblock}}<span class="antivirus-verdict-ov-swatch antivirus-verdict-ov-swatch--block"></span>{{/isblock}}
-                                {{#isreport}}<span class="antivirus-verdict-ov-swatch antivirus-verdict-ov-swatch--report"></span>{{/isreport}}
-                                {{value}}
-                            </span>
+                            <span class="antivirus-verdict-ov-policy-text">{{value}}</span>
+                            <span class="antivirus-verdict-ov-swatch antivirus-verdict-ov-swatch--{{swatch}}" aria-hidden="true"></span>
                         </div>
                     {{/livepolicies}}
                 </div>

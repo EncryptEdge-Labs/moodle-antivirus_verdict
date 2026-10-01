@@ -64,6 +64,7 @@ class history_table extends \table_sql {
         $this->no_sorting('view');
         $this->collapsible(false);
         $this->column_class('filename', 'antivirus-verdict-filename');
+        $this->column_class('status', 'antivirus-verdict-verdict-cell');
         $this->column_class('result', 'antivirus-verdict-mono');
         $this->column_class('timecreated', 'antivirus-verdict-time');
         $this->column_class('timecompleted', 'antivirus-verdict-time');
