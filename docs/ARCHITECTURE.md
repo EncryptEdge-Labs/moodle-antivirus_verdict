@@ -36,9 +36,9 @@ Return values: `SCAN_RESULT_OK`, `SCAN_RESULT_FOUND`, `SCAN_RESULT_ERROR`. Unkno
 
 `antivirus_gate::scan_file()` hashes the path, takes a per-hash lock, reuses a completed verdict when present, otherwise looks up VirusTotal. Known malicious is `FOUND`. Unknown stores `pending` and queues `process_scan` when a gate copy can be stored. Transient unavailability (`retry_policy::is_transient_unavailability`) queues pending rather than blocking as malware.
 
-## Asynchronous engine
+## Asynchronous analysis
 
-`task\process_scan` continues hash lookup, upload (direct ≤32 MiB, upload URL above that), polling, retries, archive orchestration, notifications, and late enforcement. `recover_stale_scans` re-queues or fails stuck active rows (`STALE_REQUEUE_AFTER` 7200s, `STALE_FAIL_AFTER` 86400s). Moodle 5.1/5.2 delay the running adhoc task; 4.5/5.0 queue a delayed successor so a pending scan is not left without a worker.
+`task\process_scan` continues hash lookup, provider submission (direct ≤32 MiB, upload URL above that), polling, retries, archive orchestration, notifications, and late enforcement. `recover_stale_scans` re-queues or fails stuck active rows (`STALE_REQUEUE_AFTER` 7200s, `STALE_FAIL_AFTER` 86400s). Moodle 5.1/5.2 delay the running adhoc task; 4.5/5.0 queue a delayed successor so a pending scan is not left without a worker.
 
 Retryable codes include `error_network`, `error_server`, `error_ratelimit`, `error_generic`, `error_providerunavailable`, `error_uploadinterrupted`. Permanent codes include auth, forbidden, malformed, too large, disabled. Maximum attempts: 10. Retry-After (delta-seconds or HTTP-date) is capped at 3600 seconds. Large POST attempts: 2.
 

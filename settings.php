@@ -184,7 +184,7 @@ if (!empty($ADMIN) && $ADMIN->fulltree && !empty($settings)) {
     $settings->add(new admin_setting_heading(
         'antivirus_verdict/archiveheading',
         new lang_string('settingsgroup_archive', 'antivirus_verdict'),
-        ''
+        new lang_string('settingsgroup_archive_desc', 'antivirus_verdict')
     ));
 
     $settings->add(new admin_setting_configcheckbox(
@@ -221,7 +221,7 @@ if (!empty($ADMIN) && $ADMIN->fulltree && !empty($settings)) {
     $settings->add(new admin_setting_heading(
         'antivirus_verdict/policiesheading',
         new lang_string('settingsgroup_policies', 'antivirus_verdict'),
-        ''
+        new lang_string('settingsgroup_policies_desc', 'antivirus_verdict')
     ));
 
     $allowblock = [
@@ -267,7 +267,7 @@ if (!empty($ADMIN) && $ADMIN->fulltree && !empty($settings)) {
     $settings->add(new admin_setting_heading(
         'antivirus_verdict/notificationsheading',
         new lang_string('settingsgroup_notifications', 'antivirus_verdict'),
-        ''
+        new lang_string('settingsgroup_notifications_desc', 'antivirus_verdict')
     ));
 
     $settings->add(new admin_setting_configcheckbox(
@@ -294,7 +294,7 @@ if (!empty($ADMIN) && $ADMIN->fulltree && !empty($settings)) {
     $settings->add(new admin_setting_heading(
         'antivirus_verdict/storageheading',
         new lang_string('settingsgroup_storage', 'antivirus_verdict'),
-        ''
+        new lang_string('settingsgroup_storage_desc', 'antivirus_verdict')
     ));
 
     $settings->add(new admin_setting_configtext(
@@ -316,7 +316,7 @@ if (!empty($ADMIN) && $ADMIN->fulltree && !empty($settings)) {
     $settings->add(new admin_setting_heading(
         'antivirus_verdict/limitsheading',
         new lang_string('settingsgroup_limits', 'antivirus_verdict'),
-        ''
+        new lang_string('settingsgroup_limits_desc', 'antivirus_verdict')
     ));
 
     $settings->add(new admin_setting_configtext(

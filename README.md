@@ -1,6 +1,6 @@
 # Verdict for Moodle
 
-Verdict is EncryptEdge Labs’ **Moodle security product**: a native antivirus scanner, an asynchronous analysis engine, late File API enforcement, and an operator console for administrators (and, if enabled, selected teacher pages).
+Verdict is EncryptEdge Labs’ **Moodle security product**: a native Moodle antivirus integration, asynchronous VirusTotal analysis, late File API enforcement, and an operator console for administrators (and, if enabled, selected teacher pages).
 
 It is **not** a ClamAV replacement, a VirusTotal dashboard pasted into Moodle, or a generic “scan uploads” plugin. VirusTotal API v3 is the **external analysis provider**. Verdict is the product: hashing, policy, persistence, archive member inspection, attribution, and enforcement.
 
@@ -25,7 +25,7 @@ This README is the public entry point. Language strings and admin help must matc
 
 * A Moodle `\core\antivirus\scanner` that Moodle calls on **antivirus manager** paths (repository upload, `move_to_filepool`, webservice upload, H5P ajax, and similar).
 * A **synchronous hash-lookup gate**: streaming SHA-256 of the real bytes, then VirusTotal lookup (or reuse of a stored completed verdict). The upload request does **not** wait for a full analysis.
-* An **asynchronous engine** (`process_scan`) that uploads unknown samples, polls analysis, retries (including HTTP 429 / Retry-After, cap 3600s), recovers stale work, runs optional ZIP/MBZ member scanning, notifies administrators, and applies **late malicious enforcement**.
+* **Asynchronous analysis** (`process_scan`) that submits unknown samples to the provider, polls analysis, retries (including HTTP 429 / Retry-After, cap 3600s), recovers stale work, runs optional ZIP/MBZ member inspection, notifies administrators, and applies **late malicious enforcement**.
 * A **policy layer** for unknown, suspicious, provider error, and late-malicious outcomes. Defaults are documented in FEATURES.md. Provider-error **Block** throws `scanner_exception` because Moodle core treats `SCAN_RESULT_ERROR` as fail-open.
 * An **availability circuit** (5 failures / 120s open / half-open probe). Overview’s VirusTotal radar moves only while the circuit is **closed**.
 * A **product UI** (Overview, history, scan detail, coverage registry, quarantine inventory, in-app Settings, manual scan, bulk scan) with Light/Dark tokens (`--lv-*`), not Boost admin chrome. Styles and scripts are loaded from `page::apply_chrome()` because antivirus plugins under `lib/antivirus/` are **not** in the standard theme CSS bundle.
@@ -42,7 +42,7 @@ Enablement is **only** Moodle’s native antivirus list (`$CFG->antiviruses` / M
 * **Not** endpoint or workstation antivirus.
 * **Not** a shared VirusTotal account. Each site supplies and pays for its own API plan and quota.
 * **Not** a retraction of data already sent to VirusTotal. Privacy export/delete covers **plugin-owned** rows and copies only.
-* **Not** “the ZIP was 0/N on VirusTotal, therefore Verdict inspected the members.” Outer-hash lookup and **archive member scanning** are different. Member inspection is optional (`archivescan`, off by default), ZIP/MBZ only, bounded (default 50 members, depth 1, 200 MB extracted). Limits and uninspectable formats yield incomplete/error, **never silent clean**. Malicious **members** do not self-quarantine; the **parent** Moodle file is enforced when the aggregate is malicious.
+* **Not** “the ZIP was 0/N on VirusTotal, therefore Verdict inspected the members.” Outer-hash lookup and **archive member inspection** are different. Member inspection is controlled by `archivescan` (on by default in a new install), ZIP/MBZ only, bounded (default 50 members, depth 1, 200 MB extracted). Limits and uninspectable formats yield incomplete/error, **never silent clean**. Malicious **members** do not self-quarantine; the **parent** Moodle file is enforced when the aggregate is malicious.
 * **Not** a claim that unknown, pending, not scanned, rate-limited, or provider-unavailable is **clean**. Those states are never displayed or reused as clean for security decisions.
 
 ---
@@ -95,7 +95,7 @@ Optional **operation ceilings** (lookups, uploads, polls) reserve budget before 
 | Bulk scan | Bounded course-file sweep; **not** the native upload gate |
 | Settings | Credentials (key never on scan rows, tasks, logs, or ordinary pages), policies, backfill, archive limits, retention, notifications, teacher-access toggles |
 
-Optional **backfill** (off by default): assignment submissions, forum, workshop, glossary, database, wiki, SCORM, question bank, restore, private-files sweep. Same engine as manual/async. **Not** the malware gate. Duplicate hashes reuse stored verdicts.
+Optional **backfill** (most toggles off by default; **Scan files after course restore** is on by default): assignment submissions, forum, workshop, glossary, database, wiki, SCORM, question bank, restore, private-files sweep. Same asynchronous path as manual scans. **Not** the native upload gate. Duplicate SHA-256 values reuse stored verdicts (deduplication).
 
 **Archive aggregate precedence:** malicious > suspicious > error > pending/not scanned > clean.
 

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Configurable malware provider for PHPUnit.
+ * Configurable analysis provider double for PHPUnit.
  *
  * @package   antivirus_verdict
  * @copyright 2026 M. AFZAL RIAZ, POWERED BY ENCRYPTEDGE LABS LIMITED

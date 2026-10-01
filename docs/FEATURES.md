@@ -36,7 +36,7 @@ Pending unknown files are uploaded and polled until complete, retry exhausted, o
 
 ## Archive scanning
 
-Setting `archivescan` (off by default). ZIP/MBZ only. Defaults: 50 members, depth 1, 200 MB extracted. Limits yield incomplete/error, never silent clean.
+Setting `archivescan` (on by default in a new install). ZIP/MBZ only. Defaults: 50 members, depth 1, 200 MB extracted. Limits yield incomplete/error, never silent clean.
 
 When archive scanning is **off**, unknown archive containers on the upload gate are **allowed** without a provider lookup. A **known** completed malicious (or blocking suspicious) verdict for the container hash still blocks via local reuse. When archive scanning is **on**, containers are extracted and member files are scanned; parent status aggregates members (malicious > suspicious > error > pending/not scanned > clean).
 
@@ -62,7 +62,7 @@ Setting `assignscan` (off by default). Observes `assessable_submitted`. Queues s
 
 ## Other activity / restore / private files
 
-Optional backfill flags: forum, workshop, glossary, data, wiki, SCORM, question bank, restore, private-files sweep. Same engine; not the malware gate.
+Optional backfill flags: forum, workshop, glossary, data, wiki, SCORM, question bank, restore (on by default), private-files sweep. Same asynchronous analysis path; not the native upload gate.
 
 ## Manual scan
 

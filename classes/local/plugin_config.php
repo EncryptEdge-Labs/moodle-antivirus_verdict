@@ -298,7 +298,7 @@ class plugin_config {
     /**
      * Whether assignment submissions should be queued as a backfill.
      *
-     * Independent of $CFG->antiviruses. The native scanner is the malware gate.
+     * Independent of $CFG->antiviruses. The native upload gate uses $CFG->antiviruses.
      *
      * @return bool
      */

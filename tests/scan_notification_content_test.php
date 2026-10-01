@@ -55,8 +55,8 @@ final class scan_notification_content_test extends \advanced_testcase {
 
         $content = scan_notification_content::compose($record);
 
-        $this->assertStringContainsString('Verdict security alert', $content['subject']);
-        $this->assertStringContainsString('Malicious file detected', $content['bodyplain']);
+        $this->assertStringContainsString('Verdict — malicious verdict', $content['subject']);
+        $this->assertStringContainsString('Malicious verdict', $content['bodyplain']);
         $this->assertStringContainsString('Security 101', $content['bodyplain']);
         $this->assertStringContainsString('Open scan in Verdict', $content['contextlabel']);
         $this->assertStringNotContainsString('<img', $content['bodyhtml']);
