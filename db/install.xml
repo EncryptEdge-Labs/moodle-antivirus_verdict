@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+    <XMLDB PATH="lib/antivirus/verdict/db" VERSION="2026092801" COMMENT="XMLDB file for Moodle antivirus/verdict"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="antivirus_verdict_scans" COMMENT="VirusTotal scan lifecycle and normalised results for Moodle files">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="fileid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Moodle files.id when known"/>
+        <FIELD NAME="contenthash" TYPE="char" LENGTH="40" NOTNULL="false" SEQUENCE="false" COMMENT="Moodle stored_file contenthash when known"/>
+        <FIELD NAME="pathnamehash" TYPE="char" LENGTH="40" NOTNULL="false" SEQUENCE="false" COMMENT="Moodle stored_file pathnamehash when known"/>
+        <FIELD NAME="contextid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Moodle context of the file when known"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Course id when applicable"/>
+        <FIELD NAME="component" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="File API component"/>
+        <FIELD NAME="filearea" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="File API file area"/>
+        <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="File API item id"/>
+        <FIELD NAME="filepath" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="/" SEQUENCE="false"/>
+        <FIELD NAME="filename" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Content owner or submitter when Moodle provides one. Legacy manual rows may store the initiator here."/>
+        <FIELD NAME="initiatedby" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="User who started this scan event when distinct from userid"/>
+        <FIELD NAME="submissionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="assign_submission.id when authoritative"/>
+        <FIELD NAME="source" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="manual" SEQUENCE="false" COMMENT="Scan consumer: manual, assign, ..."/>
+        <FIELD NAME="sha256" TYPE="char" LENGTH="64" NOTNULL="true" SEQUENCE="false" COMMENT="SHA-256 of file content"/>
+        <FIELD NAME="filesize" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="mimetype" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending" SEQUENCE="false" COMMENT="User-facing status"/>
+        <FIELD NAME="phase" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="queued" SEQUENCE="false" COMMENT="Internal async phase"/>
+        <FIELD NAME="vtanalysisid" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="VirusTotal analysis identifier"/>
+        <FIELD NAME="vtfileid" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="VirusTotal file object identifier"/>
+        <FIELD NAME="malicious" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Malicious engine count, null if unknown"/>
+        <FIELD NAME="suspicious" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Suspicious engine count, null if unknown"/>
+        <FIELD NAME="undetected" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Undetected engine count, null if unknown"/>
+        <FIELD NAME="harmless" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Harmless engine count, null if unknown"/>
+        <FIELD NAME="timeout" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Timeout engine count, null if unknown"/>
+        <FIELD NAME="totalengines" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Sum of known engine counts, null if unknown"/>
+        <FIELD NAME="errorcode" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="Stable internal error code"/>
+        <FIELD NAME="enforcement" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="none" SEQUENCE="false" COMMENT="Post-upload enforcement outcome for a malicious verdict"/>
+        <FIELD NAME="pollattempts" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timelastpoll" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timesubmitted" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="When the file was submitted for analysis"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timecompleted" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="parentscanid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Container scan id for archive member rows"/>
+        <FIELD NAME="archiveoutcome" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="Archive member-scan outcome on container rows"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="fileid" UNIQUE="false" FIELDS="fileid"/>
+        <INDEX NAME="contenthash" UNIQUE="false" FIELDS="contenthash"/>
+        <INDEX NAME="pathnamehash" UNIQUE="false" FIELDS="pathnamehash"/>
+        <INDEX NAME="sha256" UNIQUE="false" FIELDS="sha256"/>
+        <INDEX NAME="status" UNIQUE="false" FIELDS="status"/>
+        <INDEX NAME="phase" UNIQUE="false" FIELDS="phase"/>
+        <INDEX NAME="enforcement" UNIQUE="false" FIELDS="enforcement"/>
+        <INDEX NAME="contextid" UNIQUE="false" FIELDS="contextid"/>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+        <INDEX NAME="submissionid" UNIQUE="false" FIELDS="submissionid"/>
+        <INDEX NAME="courseid" UNIQUE="false" FIELDS="courseid"/>
+        <INDEX NAME="vtanalysisid" UNIQUE="false" FIELDS="vtanalysisid"/>
+        <INDEX NAME="vtfileid" UNIQUE="false" FIELDS="vtfileid"/>
+        <INDEX NAME="source" UNIQUE="false" FIELDS="source"/>
+        <INDEX NAME="timecreated" UNIQUE="false" FIELDS="timecreated"/>
+        <INDEX NAME="timecompleted" UNIQUE="false" FIELDS="timecompleted"/>
+        <INDEX NAME="comp_area_item" UNIQUE="false" FIELDS="component, filearea, itemid"/>
+        <INDEX NAME="parentscanid" UNIQUE="false" FIELDS="parentscanid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="antivirus_verdict_opcounts" COMMENT="Site-wide totals of provider operations performed and avoided">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="hashlookups" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Hash lookups sent to the provider"/>
+        <FIELD NAME="uploads" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="File uploads sent to the provider"/>
+        <FIELD NAME="polls" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Analysis polls sent to the provider"/>
+        <FIELD NAME="completedreuses" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Scans that reused a completed result"/>
+        <FIELD NAME="inflightjoins" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Scans that joined an in-flight analysis"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="antivirus_verdict_opreserve" COMMENT="Site-wide reserved provider-operation slots">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="lookups" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Reserved hash lookups"/>
+        <FIELD NAME="uploads" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Reserved file uploads"/>
+        <FIELD NAME="polls" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Reserved analysis polls"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>

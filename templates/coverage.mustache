@@ -1,0 +1,59 @@
+{{!
+    @template antivirus_verdict/coverage
+
+    File coverage registry table for administrators.
+
+    Example context (json):
+    {
+        "pagetitle": "File coverage",
+        "pagesubtitle": "Registered scan surfaces",
+        "columncomponent": "Component",
+        "columnarea": "File area",
+        "columnmechanism": "Mechanism",
+        "columnstate": "State",
+        "rows": [
+            {
+                "title": "Assignment submissions",
+                "component": "assignsubmission_file",
+                "filearea": "submission_files",
+                "mechanism": "Event",
+                "state": "Active",
+                "stateclass": "antivirus-verdict-badge antivirus-verdict-badge--clean"
+            }
+        ]
+    }
+}}
+<div class="antivirus-verdict-page">
+    <div class="antivirus-verdict-topline">
+        <div>
+            <h1 class="antivirus-verdict-title"><span class="antivirus-verdict-rule"></span>{{pagetitle}}</h1>
+            <p class="antivirus-verdict-subtitle">{{pagesubtitle}}</p>
+        </div>
+    </div>
+    <div class="antivirus-verdict-panel antivirus-verdict-panel--flush">
+        <table class="table generaltable antivirus-verdict-table">
+            <caption class="visually-hidden">{{pagetitle}}</caption>
+            <thead>
+                <tr>
+                    <th scope="col">{{columncomponent}}</th>
+                    <th scope="col">{{columnarea}}</th>
+                    <th scope="col">{{columnmechanism}}</th>
+                    <th scope="col">{{columnstate}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#rows}}
+                    <tr>
+                        <td class="antivirus-verdict-filename" data-label="{{columncomponent}}">
+                            {{title}}
+                            <div class="antivirus-verdict-history-context">{{component}}</div>
+                        </td>
+                        <td data-label="{{columnarea}}">{{filearea}}</td>
+                        <td data-label="{{columnmechanism}}">{{mechanism}}</td>
+                        <td data-label="{{columnstate}}"><span class="{{stateclass}}"><span class="antivirus-verdict-dot"></span>{{state}}</span></td>
+                    </tr>
+                {{/rows}}
+            </tbody>
+        </table>
+    </div>
+</div>

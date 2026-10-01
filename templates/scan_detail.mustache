@@ -1,0 +1,229 @@
+{{!
+    @template antivirus_verdict/scan_detail
+
+    Standalone scan detail. Does not render assignment or course activity content.
+
+    Example context (json):
+    {
+        "filename": "report.pdf",
+        "source": "Manual",
+        "status": "Clean",
+        "statusclass": "antivirus-verdict-badge antivirus-verdict-badge--clean",
+        "hasdetection": true,
+        "detection": "0 / 70 engines detected",
+        "detectionpct": 1,
+        "nodetection": false,
+        "hasenforcement": false,
+        "enforcement": "",
+        "enforcementheading": "Enforcement",
+        "hasmimetype": true,
+        "mimetype": "application/pdf",
+        "filesize": "12 KB",
+        "hassha256": true,
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "queued": "Thu 10 Sep 2026, 8:29 PM",
+        "submitted": "Thu 10 Sep 2026, 8:29 PM",
+        "completed": "Thu 10 Sep 2026, 8:31 PM",
+        "hasreport": true,
+        "reporturl": "https://www.virustotal.com/gui/file/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "reportlabel": "View on VirusTotal ↗",
+        "historyurl": "/lib/antivirus/verdict/history.php",
+        "backlabel": "Scan history",
+        "sourcesubtitle": "Manual scan",
+        "outcomemessage": "",
+        "hascourse": false,
+        "coursename": "",
+        "copyhashtitle": "Copy hash",
+        "showrescanunavailable": false,
+        "rescanunavailable": "Cannot rescan. The original file is no longer available.",
+        "dismissbanner": "Dismiss",
+        "hasrelatedscan": false,
+        "relatedscanurl": "",
+        "relatedisgate": false,
+        "relatedisassign": false
+    }
+}}
+<div class="antivirus-verdict-page">
+    <a class="antivirus-verdict-back" href="{{historyurl}}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6"/>
+        </svg>
+        {{backlabel}}
+    </a>
+    <div class="antivirus-verdict-detail-head">
+        <h1 class="antivirus-verdict-title antivirus-verdict-title-file" title="{{filename}}">
+            <span class="antivirus-verdict-rule"></span>
+            <span class="antivirus-verdict-title-text">{{filename}}</span>
+        </h1>
+        <span class="{{statusclass}}"><span class="antivirus-verdict-dot"></span>{{status}}</span>
+    </div>
+    <p class="antivirus-verdict-subtitle antivirus-verdict-detail-source">{{sourcesubtitle}}</p>
+    {{#outcomemessage}}
+        <div class="antivirus-verdict-banner" role="status">{{outcomemessage}}</div>
+    {{/outcomemessage}}
+    {{#ispending}}
+        <div class="antivirus-verdict-banner antivirus-verdict-banner--info" role="status">{{pendingmessage}}</div>
+    {{/ispending}}
+    <section class="antivirus-verdict-panel">
+        <div class="antivirus-verdict-detail-grid">
+            <div class="antivirus-verdict-detail-item">
+                <div class="antivirus-verdict-kicker">{{#str}}colsource, antivirus_verdict{{/str}}</div>
+                <div class="antivirus-verdict-dvalue">{{source}}</div>
+            </div>
+            <div class="antivirus-verdict-detail-item">
+                <div class="antivirus-verdict-kicker">{{#str}}colresult, antivirus_verdict{{/str}}</div>
+                <div class="antivirus-verdict-dvalue">
+                    {{#hasdetection}}{{detection}}{{/hasdetection}}
+                    {{#nodetection}}{{#str}}valueempty, antivirus_verdict{{/str}}{{/nodetection}}
+                </div>
+                {{#hasdetection}}
+                    <div class="antivirus-verdict-meter" aria-hidden="true"><i style="width: {{detectionpct}}{{^detectionpct}}0{{/detectionpct}}%;"></i></div>
+                {{/hasdetection}}
+            </div>
+            {{#hasenforcement}}
+                <div class="antivirus-verdict-detail-item">
+                    <div class="antivirus-verdict-kicker">{{enforcementheading}}</div>
+                    <div class="antivirus-verdict-dvalue">{{enforcement}}</div>
+                </div>
+            {{/hasenforcement}}
+            {{#context.showscannedby}}
+                <div class="antivirus-verdict-detail-item">
+                    <div class="antivirus-verdict-kicker">{{context.scannedbylabel}}</div>
+                    <div class="antivirus-verdict-dvalue">{{context.scannedby}}</div>
+                </div>
+            {{/context.showscannedby}}
+            {{#context.showuploadsession}}
+                <div class="antivirus-verdict-detail-item">
+                    <div class="antivirus-verdict-kicker">{{context.uploadsessionlabel}}</div>
+                    <div class="antivirus-verdict-dvalue">{{context.uploadsessionuser}}</div>
+                </div>
+            {{/context.showuploadsession}}
+            {{#context.showfileowner}}
+                <div class="antivirus-verdict-detail-item">
+                    <div class="antivirus-verdict-kicker">{{context.fileownerlabel}}</div>
+                    <div class="antivirus-verdict-dvalue">{{context.fileowner}}</div>
+                </div>
+            {{/context.showfileowner}}
+            {{#context.showcourse}}
+                <div class="antivirus-verdict-detail-item">
+                    <div class="antivirus-verdict-kicker">{{#str}}colcourse, antivirus_verdict{{/str}}</div>
+                    <div class="antivirus-verdict-dvalue">
+                        {{#context.hascourseurl}}
+                            <a href="{{context.courseurl}}">{{context.course}}</a>
+                        {{/context.hascourseurl}}
+                        {{^context.hascourseurl}}{{context.course}}{{/context.hascourseurl}}
+                    </div>
+                </div>
+            {{/context.showcourse}}
+            {{#context.showactivitytype}}
+                <div class="antivirus-verdict-detail-item">
+                    <div class="antivirus-verdict-kicker">{{#str}}contextactivitytype, antivirus_verdict{{/str}}</div>
+                    <div class="antivirus-verdict-dvalue">{{context.activitytype}}</div>
+                </div>
+            {{/context.showactivitytype}}
+            {{#context.showactivity}}
+                <div class="antivirus-verdict-detail-item">
+                    <div class="antivirus-verdict-kicker">{{#str}}contextactivity, antivirus_verdict{{/str}}</div>
+                    <div class="antivirus-verdict-dvalue">
+                        {{#context.hasactivityurl}}
+                            <a href="{{context.activityurl}}">{{context.activity}}</a>
+                        {{/context.hasactivityurl}}
+                        {{^context.hasactivityurl}}{{context.activity}}{{/context.hasactivityurl}}
+                    </div>
+                </div>
+            {{/context.showactivity}}
+            {{#context.showsubmission}}
+                <div class="antivirus-verdict-detail-item">
+                    <div class="antivirus-verdict-kicker">{{#str}}contextsubmission, antivirus_verdict{{/str}}</div>
+                    <div class="antivirus-verdict-dvalue">
+                        {{#context.hassubmissionurl}}
+                            <a href="{{context.submissionurl}}">{{context.submission}}</a>
+                        {{/context.hassubmissionurl}}
+                        {{^context.hassubmissionurl}}{{context.submission}}{{/context.hassubmissionurl}}
+                    </div>
+                </div>
+            {{/context.showsubmission}}
+            {{#context.showfilelocation}}
+                <div class="antivirus-verdict-detail-item">
+                    <div class="antivirus-verdict-kicker">{{#str}}contextfilelocation, antivirus_verdict{{/str}}</div>
+                    <div class="antivirus-verdict-dvalue">{{context.filelocation}}</div>
+                </div>
+            {{/context.showfilelocation}}
+            {{#context.showsubmissionfilelocation}}
+                <div class="antivirus-verdict-detail-item">
+                    <div class="antivirus-verdict-kicker">{{#str}}contextsubmissionfilelocation, antivirus_verdict{{/str}}</div>
+                    <div class="antivirus-verdict-dvalue">{{context.submissionfilelocation}}</div>
+                </div>
+            {{/context.showsubmissionfilelocation}}
+            {{#hasrelatedscan}}
+                <div class="antivirus-verdict-detail-item">
+                    <div class="antivirus-verdict-kicker">
+                        {{#relatedisgate}}{{#str}}relatedgatescan, antivirus_verdict{{/str}}{{/relatedisgate}}
+                        {{#relatedisassign}}{{#str}}relatedassignscan, antivirus_verdict{{/str}}{{/relatedisassign}}
+                    </div>
+                    <div class="antivirus-verdict-dvalue">
+                        <a href="{{relatedscanurl}}">{{#str}}viewdetails, antivirus_verdict{{/str}}</a>
+                    </div>
+                </div>
+            {{/hasrelatedscan}}
+            {{#hasmimetype}}
+                <div class="antivirus-verdict-detail-item">
+                    <div class="antivirus-verdict-kicker">{{#str}}colmimetype, antivirus_verdict{{/str}}</div>
+                    <div class="antivirus-verdict-dvalue antivirus-verdict-mono">{{mimetype}}</div>
+                </div>
+            {{/hasmimetype}}
+            <div class="antivirus-verdict-detail-item">
+                <div class="antivirus-verdict-kicker">{{#str}}colfilesize, antivirus_verdict{{/str}}</div>
+                <div class="antivirus-verdict-dvalue antivirus-verdict-mono">{{filesize}}</div>
+            </div>
+            {{#hassha256}}
+                <div class="antivirus-verdict-detail-item antivirus-verdict-detail-wide">
+                    <div class="antivirus-verdict-kicker">{{#str}}colsha256, antivirus_verdict{{/str}}</div>
+                    <div class="antivirus-verdict-hash-row">
+                        <div class="antivirus-verdict-dvalue antivirus-verdict-mono antivirus-verdict-hash">{{sha256}}</div>
+                        <button type="button" class="antivirus-verdict-icon-btn" data-antivirus-verdict="copy-hash" title="{{copyhashtitle}}">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                                <rect x="9" y="9" width="12" height="12" rx="1.5"/>
+                                <path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/>
+                            </svg>
+                            <span class="visually-hidden">{{copyhashtitle}}</span>
+                        </button>
+                    </div>
+                </div>
+            {{/hassha256}}
+            <div class="antivirus-verdict-detail-item">
+                <div class="antivirus-verdict-kicker">{{#str}}colqueued, antivirus_verdict{{/str}}</div>
+                <div class="antivirus-verdict-dvalue antivirus-verdict-dvalue-time">{{queued}}</div>
+            </div>
+            <div class="antivirus-verdict-detail-item">
+                <div class="antivirus-verdict-kicker">{{#str}}colsubmitted, antivirus_verdict{{/str}}</div>
+                <div class="antivirus-verdict-dvalue antivirus-verdict-dvalue-time">{{submitted}}</div>
+            </div>
+            <div class="antivirus-verdict-detail-item">
+                <div class="antivirus-verdict-kicker">{{#str}}colcompleted, antivirus_verdict{{/str}}</div>
+                <div class="antivirus-verdict-dvalue antivirus-verdict-dvalue-time">{{completed}}</div>
+            </div>
+            {{#hasreport}}
+                <div class="antivirus-verdict-detail-item">
+                    <div class="antivirus-verdict-kicker">{{reportheading}}</div>
+                    <div class="antivirus-verdict-dvalue">
+                        <a href="{{reporturl}}" rel="noopener noreferrer" target="_blank">{{reportlabel}}</a>
+                    </div>
+                </div>
+            {{/hasreport}}
+        </div>
+        {{#showrescanunavailable}}
+            <div class="antivirus-verdict-banner" role="status">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M12 8v5M12 16h.01"/>
+                </svg>
+                <span>{{rescanunavailable}}</span>
+                <button type="button" class="antivirus-verdict-banner-dismiss" data-antivirus-verdict="dismiss-banner" title="{{dismissbanner}}">
+                    ✕
+                    <span class="visually-hidden">{{dismissbanner}}</span>
+                </button>
+            </div>
+        {{/showrescanunavailable}}
+    </section>
+</div>

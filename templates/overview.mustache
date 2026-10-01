@@ -1,0 +1,515 @@
+{{!
+    @template antivirus_verdict/overview
+
+    Administrator security overview. All values are escaped by Mustache.
+
+    Example context (json):
+    {
+        "pagetitle": "Security overview",
+        "pagesubtitle": "Live status of the VirusTotal scanner for this site.",
+        "needssetup": false,
+        "hassettings": true,
+        "settingsurl": "/lib/antivirus/verdict/configure.php",
+        "scanurl": "/lib/antivirus/verdict/scan.php",
+        "canscan": true,
+        "dashhealthheading": "System health"
+    }
+}}
+<div class="antivirus-verdict-ov antivirus-verdict-page">
+    <div class="antivirus-verdict-topline">
+        <div>
+            <h1 class="antivirus-verdict-title"><span class="antivirus-verdict-rule"></span>{{pagetitle}}</h1>
+            <p class="antivirus-verdict-subtitle">{{pagesubtitle}}</p>
+        </div>
+    </div>
+
+    {{#needssetup}}
+        <div class="antivirus-verdict-ov-banner antivirus-verdict-ov-banner--warn" role="status">
+            <div class="antivirus-verdict-ov-banner-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2 3 6v6c0 5 3.8 8.4 9 10 5.2-1.6 9-5 9-10V6l-9-4Z"/>
+                </svg>
+            </div>
+            <div class="antivirus-verdict-ov-banner-body">
+                <div class="antivirus-verdict-ov-banner-title">{{setupheading}}</div>
+                <div class="antivirus-verdict-ov-banner-desc">{{protectionmessage}}</div>
+                <ol class="antivirus-verdict-ov-setup">
+                    {{#setupsteps}}
+                        <li>{{text}}</li>
+                    {{/setupsteps}}
+                </ol>
+            </div>
+            {{#hassettings}}
+                <div class="antivirus-verdict-ov-banner-actions">
+                    {{#setupprimaryonly}}
+                        <a class="antivirus-verdict-ov-qa antivirus-verdict-ov-qa--primary" href="{{setupprimaryurl}}">{{setupprimarylabel}}</a>
+                    {{/setupprimaryonly}}
+                    {{^setupprimaryonly}}
+                        <a class="antivirus-verdict-ov-qa antivirus-verdict-ov-qa--primary" href="{{settingsurl}}">{{settingslabel}}</a>
+                        {{#hasmanageurl}}
+                            <a class="antivirus-verdict-ov-qa" href="{{manageurl}}">{{managelabel}}</a>
+                        {{/hasmanageurl}}
+                    {{/setupprimaryonly}}
+                </div>
+            {{/hassettings}}
+        </div>
+    {{/needssetup}}
+    {{^needssetup}}
+        {{#showprotection}}
+            <div class="antivirus-verdict-ov-banner{{^bannerok}} antivirus-verdict-ov-banner--warn{{/bannerok}}" role="status">
+                <div class="antivirus-verdict-ov-banner-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2 3 6v6c0 5 3.8 8.4 9 10 5.2-1.6 9-5 9-10V6l-9-4Z"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                </div>
+                <div class="antivirus-verdict-ov-banner-body">
+                    <div class="antivirus-verdict-ov-banner-title">{{protectionlabel}}</div>
+                    <div class="antivirus-verdict-ov-banner-desc">{{protectionmessage}}</div>
+                </div>
+            </div>
+        {{/showprotection}}
+    {{/needssetup}}
+
+    <div class="antivirus-verdict-status-grid antivirus-verdict-ov-row2 antivirus-verdict-ov-statusgrid">
+        <section class="antivirus-verdict-ov-card antivirus-verdict-ov-status">
+            <div class="antivirus-verdict-ov-status-top">
+                <div class="antivirus-verdict-ov-radar{{^scannerradaractive}} is-paused{{/scannerradaractive}}" aria-hidden="true">
+                    <div class="antivirus-verdict-ov-radar-ring antivirus-verdict-ov-radar-ring--1"></div>
+                    <div class="antivirus-verdict-ov-radar-ring antivirus-verdict-ov-radar-ring--2"></div>
+                    <div class="antivirus-verdict-ov-radar-ring antivirus-verdict-ov-radar-ring--3"></div>
+                    <div class="antivirus-verdict-radar-sweep antivirus-verdict-ov-radar-sweep"></div>
+                    <div class="antivirus-verdict-ov-radar-dot"></div>
+                </div>
+                <div>
+                    <div class="antivirus-verdict-ov-kicker">{{scannerheading}}</div>
+                    <div class="antivirus-verdict-ov-value">
+                        {{scannerstatelabel}}
+                        <span class="antivirus-verdict-ov-pill{{#scannerpillon}} antivirus-verdict-ov-pill--on{{/scannerpillon}}{{^scannerpillon}} antivirus-verdict-ov-pill--off{{/scannerpillon}}">
+                            <span class="antivirus-verdict-ov-pill-dot"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <p class="antivirus-verdict-ov-desc">{{scannermessage}}</p>
+        </section>
+        <section class="antivirus-verdict-ov-card antivirus-verdict-ov-status">
+            <div class="antivirus-verdict-ov-status-top">
+                <div class="antivirus-verdict-ov-radar{{^providerradaractive}} is-paused{{/providerradaractive}}" aria-hidden="true">
+                    <div class="antivirus-verdict-ov-radar-ring antivirus-verdict-ov-radar-ring--1"></div>
+                    <div class="antivirus-verdict-ov-radar-ring antivirus-verdict-ov-radar-ring--2"></div>
+                    <div class="antivirus-verdict-ov-radar-ring antivirus-verdict-ov-radar-ring--3"></div>
+                    <div class="antivirus-verdict-radar-sweep antivirus-verdict-ov-radar-sweep"></div>
+                    <div class="antivirus-verdict-ov-radar-dot"></div>
+                </div>
+                <div>
+                    <div class="antivirus-verdict-ov-kicker">{{providerheading}}</div>
+                    <div class="antivirus-verdict-ov-value">
+                        {{providerstate}}
+                        <span class="antivirus-verdict-ov-pill{{#providerpillon}} antivirus-verdict-ov-pill--on{{/providerpillon}}{{^providerpillon}} antivirus-verdict-ov-pill--off{{/providerpillon}}">
+                            <span class="antivirus-verdict-ov-pill-dot"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <p class="antivirus-verdict-ov-desc">{{providermessage}}</p>
+        </section>
+        {{#showquarantinecard}}
+        <section class="antivirus-verdict-ov-card antivirus-verdict-ov-status">
+            <div class="antivirus-verdict-ov-status-top">
+                <div>
+                    <div class="antivirus-verdict-ov-kicker">{{enforcementheading}}</div>
+                    <div class="antivirus-verdict-ov-big">{{quarantinecount}}</div>
+                </div>
+            </div>
+            <a class="antivirus-verdict-ov-link" href="{{enforcementurl}}">{{enforcementopenlabel}}</a>
+        </section>
+        {{/showquarantinecard}}
+        {{#showcoveragecard}}
+        <section class="antivirus-verdict-ov-card antivirus-verdict-ov-status">
+            <div class="antivirus-verdict-ov-status-top">
+                <div>
+                    <div class="antivirus-verdict-ov-kicker">{{coverageheading}}</div>
+                    <div class="antivirus-verdict-ov-big">{{coverageactive}}</div>
+                </div>
+            </div>
+            <a class="antivirus-verdict-ov-link" href="{{coverageurl}}">{{coverageopenlabel}}</a>
+        </section>
+        {{/showcoveragecard}}
+    </div>
+
+    <section class="antivirus-verdict-ov-section" aria-labelledby="antivirus-verdict-ov-summary">
+        <div class="antivirus-verdict-ov-section-head">
+            <h2 class="antivirus-verdict-ov-section-title" id="antivirus-verdict-ov-summary">{{summaryheading}}</h2>
+        </div>
+        {{#isempty}}
+            <div class="antivirus-verdict-ov-card">
+                <p class="antivirus-verdict-ov-empty" role="status">{{emptymessage}}</p>
+            </div>
+        {{/isempty}}
+        <div class="antivirus-verdict-ov-summary">
+            <div class="antivirus-verdict-ov-stats">
+                {{#stats}}
+                    <div class="antivirus-verdict-ov-stat antivirus-verdict-ov-stat--{{celltone}}">
+                        <div class="antivirus-verdict-ov-stat-num">
+                            {{#hasurl}}<a href="{{url}}">{{count}}<span class="visually-hidden"> {{label}}</span></a>{{/hasurl}}
+                            {{^hasurl}}{{count}}{{/hasurl}}
+                        </div>
+                        <div class="antivirus-verdict-ov-stat-lbl">{{label}}</div>
+                    </div>
+                {{/stats}}
+            </div>
+            <div class="antivirus-verdict-ov-stat-foot">
+                <span>{{last24label}} <b>{{last24}}</b></span>
+                <span>{{last7label}} <b>{{last7}}</b></span>
+            </div>
+        </div>
+        <div class="antivirus-verdict-ov-charts">
+            <article class="antivirus-verdict-ov-card">
+                <div class="antivirus-verdict-ov-card-head">
+                    <div>
+                        <div class="antivirus-verdict-ov-card-title">{{volumelabel}}</div>
+                        <div class="antivirus-verdict-ov-card-sub">{{volumesub}}</div>
+                    </div>
+                    <div class="antivirus-verdict-ov-tag">7d</div>
+                </div>
+                {{#volumeempty}}
+                    <p class="antivirus-verdict-ov-empty" role="status">{{volumeemptytext}}</p>
+                {{/volumeempty}}
+                {{^volumeempty}}
+                    <div class="antivirus-verdict-ov-trend"><span class="antivirus-verdict-ov-trend-big">{{trendtotal}}</span></div>
+                    <p class="antivirus-verdict-ov-caption">{{volumecaption}}</p>
+                    <div class="antivirus-verdict-ov-bars" role="img" aria-label="{{volumelabel}}">
+                        {{#volumebars}}
+                            <div class="antivirus-verdict-ov-barcol">
+                                <div class="antivirus-verdict-ov-bar{{#isactive}} is-active{{/isactive}}" style="height: {{heightpct}}{{^heightpct}}0{{/heightpct}}%;" title="{{label}}: {{count}}"></div>
+                                <div class="antivirus-verdict-ov-barday">{{day}}</div>
+                                <span class="visually-hidden">{{label}}: {{count}}</span>
+                            </div>
+                        {{/volumebars}}
+                    </div>
+                {{/volumeempty}}
+            </article>
+            <article class="antivirus-verdict-ov-card">
+                <div class="antivirus-verdict-ov-card-head">
+                    <div>
+                        <div class="antivirus-verdict-ov-card-title">{{donutlabel}}</div>
+                        <div class="antivirus-verdict-ov-card-sub">{{mixsubtitle}}</div>
+                    </div>
+                </div>
+                {{#donutempty}}
+                    <p class="antivirus-verdict-ov-empty" role="status">{{donutemptytext}}</p>
+                {{/donutempty}}
+                {{^donutempty}}
+                    <div class="antivirus-verdict-ov-donutwrap">
+                        <div class="antivirus-verdict-ov-donut">
+                            <svg width="104" height="104" viewBox="0 0 118 118" role="img" aria-label="{{donutlabel}}">
+                                <circle class="antivirus-verdict-ov-donut-track" cx="59" cy="59" r="48" fill="none" stroke-width="14"></circle>
+                                {{#donutsegments}}
+                                    <circle class="antivirus-verdict-ov-donut-seg antivirus-verdict-ov-donut-seg--{{tone}}" cx="59" cy="59" r="48" fill="none" stroke-width="14"
+                                        stroke-dasharray="{{dash}} {{gap}}" stroke-dashoffset="{{offset}}"
+                                        transform="rotate(-90 59 59)">
+                                        <title>{{label}}</title>
+                                    </circle>
+                                {{/donutsegments}}
+                            </svg>
+                            <div class="antivirus-verdict-ov-donut-center">
+                                <div class="antivirus-verdict-ov-donut-n">{{donuttotal}}</div>
+                                <div class="antivirus-verdict-ov-donut-l">{{donutcenterlabel}}</div>
+                            </div>
+                        </div>
+                        <div class="antivirus-verdict-ov-legend">
+                            {{#donutlegend}}
+                                <div class="antivirus-verdict-ov-legend-row">
+                                    <div class="antivirus-verdict-ov-legend-key">
+                                        <span class="antivirus-verdict-ov-legend-swatch antivirus-verdict-ov-legend-swatch--{{tone}}"></span>
+                                        {{label}}
+                                    </div>
+                                    <div class="antivirus-verdict-ov-legend-val">{{count}}</div>
+                                </div>
+                            {{/donutlegend}}
+                        </div>
+                    </div>
+                {{/donutempty}}
+            </article>
+        </div>
+    </section>
+
+    <section class="antivirus-verdict-ov-section" aria-labelledby="antivirus-verdict-dash-health">
+        <div class="antivirus-verdict-ov-section-head">
+            <h2 class="antivirus-verdict-ov-section-title" id="antivirus-verdict-dash-health">{{dashhealthheading}}</h2>
+        </div>
+        <div class="antivirus-verdict-ov-row3">
+            <article class="antivirus-verdict-ov-card antivirus-verdict-ov-health">
+                <div class="antivirus-verdict-ov-kicker">{{uploadgatelabel}}</div>
+                <div class="antivirus-verdict-ov-value">
+                    {{uploadgatevalue}}
+                    <span class="antivirus-verdict-ov-pill{{#scannerpillon}} antivirus-verdict-ov-pill--on{{/scannerpillon}}{{^scannerpillon}} antivirus-verdict-ov-pill--off{{/scannerpillon}}">
+                        <span class="antivirus-verdict-ov-pill-dot"></span>
+                    </span>
+                </div>
+                <p class="antivirus-verdict-ov-desc">{{uploadgatedesc}}</p>
+            </article>
+            <article class="antivirus-verdict-ov-card antivirus-verdict-ov-health">
+                <div class="antivirus-verdict-ov-kicker">{{circuitlabel}}</div>
+                <div class="antivirus-verdict-ov-value">
+                    {{circuitvalue}}
+                    <span class="antivirus-verdict-ov-pill{{#providerpillon}} antivirus-verdict-ov-pill--on{{/providerpillon}}{{^providerpillon}} antivirus-verdict-ov-pill--off{{/providerpillon}}">
+                        <span class="antivirus-verdict-ov-pill-dot"></span>
+                    </span>
+                </div>
+                <div class="antivirus-verdict-ov-kv">
+                    <span class="antivirus-verdict-ov-kv-l">{{circuitfailureslabel}}</span>
+                    <span class="antivirus-verdict-ov-kv-v">{{circuitfailuresdisplay}}</span>
+                </div>
+                <div class="antivirus-verdict-ov-kv">
+                    <span class="antivirus-verdict-ov-kv-l">{{circuitcooldownlabel}}</span>
+                    <span class="antivirus-verdict-ov-kv-v">{{circuitcooldown}}s <span class="antivirus-verdict-ov-faint">{{circuitcooldownwindow}}</span></span>
+                </div>
+                <div class="antivirus-verdict-ov-kv">
+                    <span class="antivirus-verdict-ov-kv-l">{{activejobslabelshort}}</span>
+                    <span class="antivirus-verdict-ov-kv-v">{{activejobs}}</span>
+                </div>
+                {{#haslasterror}}
+                    <p class="antivirus-verdict-ov-note">{{lasterrorlabel}}: <em>{{lasterror}}</em></p>
+                {{/haslasterror}}
+                {{^haslasterror}}
+                    <p class="antivirus-verdict-ov-note">{{nolasterror}}</p>
+                {{/haslasterror}}
+            </article>
+            <article class="antivirus-verdict-ov-card antivirus-verdict-ov-health">
+                <div class="antivirus-verdict-ov-kicker">{{livepoliciesheading}}</div>
+                <div class="antivirus-verdict-ov-policies">
+                    {{#livepolicies}}
+                        <div class="antivirus-verdict-ov-policy">
+                            <span class="antivirus-verdict-ov-policy-name">{{label}}</span>
+                            <span class="antivirus-verdict-ov-policy-val">
+                                {{#isallow}}<span class="antivirus-verdict-ov-swatch antivirus-verdict-ov-swatch--allow"></span>{{/isallow}}
+                                {{#isblock}}<span class="antivirus-verdict-ov-swatch antivirus-verdict-ov-swatch--block"></span>{{/isblock}}
+                                {{#isreport}}<span class="antivirus-verdict-ov-swatch antivirus-verdict-ov-swatch--report"></span>{{/isreport}}
+                                {{value}}
+                            </span>
+                        </div>
+                    {{/livepolicies}}
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="antivirus-verdict-ov-section" aria-labelledby="antivirus-verdict-dash-efficiency">
+        <div class="antivirus-verdict-ov-section-head">
+            <h2 class="antivirus-verdict-ov-section-title" id="antivirus-verdict-dash-efficiency">{{dashefficiencyheading}}</h2>
+        </div>
+        <div class="antivirus-verdict-ov-row2">
+            <article class="antivirus-verdict-ov-card">
+                <div class="antivirus-verdict-ov-card-title antivirus-verdict-ov-card-title--spaced">{{dedupheading}}</div>
+                <div class="antivirus-verdict-ov-eff">
+                    <span class="antivirus-verdict-ov-eff-num">{{dedupreused}}</span>
+                    <span class="antivirus-verdict-ov-eff-of">{{dedupheadline}}</span>
+                </div>
+                <div class="antivirus-verdict-ov-track" aria-hidden="true">
+                    <div class="antivirus-verdict-ov-fill" style="width: {{dedupfillpct}}{{^dedupfillpct}}0{{/dedupfillpct}}%;"></div>
+                </div>
+                <div class="antivirus-verdict-ov-kv">
+                    <span class="antivirus-verdict-ov-kv-l">{{dedupcompletedlabel}}</span>
+                    <span class="antivirus-verdict-ov-kv-v">{{dedupcompleted}}</span>
+                </div>
+                <div class="antivirus-verdict-ov-kv">
+                    <span class="antivirus-verdict-ov-kv-l">{{dedupuniquelabel}}</span>
+                    <span class="antivirus-verdict-ov-kv-v">{{dedupunique}}</span>
+                </div>
+                <p class="antivirus-verdict-ov-note">{{dedupdesc}}</p>
+            </article>
+            <article class="antivirus-verdict-ov-card">
+                <div class="antivirus-verdict-ov-card-title antivirus-verdict-ov-card-title--archive">{{archiveheading}}</div>
+                <div class="antivirus-verdict-ov-archive">
+                    <div>
+                        <div class="antivirus-verdict-ov-archive-num">{{archivecontainers}}</div>
+                        <div class="antivirus-verdict-ov-archive-lbl">{{archivecontainerslabel}}</div>
+                    </div>
+                    <div>
+                        <div class="antivirus-verdict-ov-archive-num">{{archivemembers}}</div>
+                        <div class="antivirus-verdict-ov-archive-lbl">{{archivememberslabel}}</div>
+                    </div>
+                    <div{{#archiveuninspectablewarn}} class="antivirus-verdict-ov-archive--warn"{{/archiveuninspectablewarn}}>
+                        <div class="antivirus-verdict-ov-archive-num">{{archiveuninspectable}}</div>
+                        <div class="antivirus-verdict-ov-archive-lbl">{{archiveuninspectablelabel}}</div>
+                    </div>
+                    <div>
+                        <div class="antivirus-verdict-ov-archive-num">{{archivemalicious}}</div>
+                        <div class="antivirus-verdict-ov-archive-lbl">{{archivemaliciouslabel}}</div>
+                    </div>
+                </div>
+                <p class="antivirus-verdict-ov-note">{{archivelimits}}</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="antivirus-verdict-ov-section" aria-labelledby="antivirus-verdict-dash-enforcement">
+        <div class="antivirus-verdict-ov-section-head">
+            <h2 class="antivirus-verdict-ov-section-title" id="antivirus-verdict-dash-enforcement">{{dashenforcementheading}}</h2>
+        </div>
+        {{#hasenforcementevents}}
+            <div class="antivirus-verdict-ov-tablecard">
+                <div class="antivirus-verdict-ov-tablescroll">
+                <table class="table generaltable antivirus-verdict-ov-table antivirus-verdict-ov-table--enforcement">
+                    <caption class="visually-hidden">{{dashenforcementheading}}</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">{{colcompleted}}</th>
+                            <th scope="col">{{colfilename}}</th>
+                            <th scope="col">{{#str}}colcourse, antivirus_verdict{{/str}}</th>
+                            <th scope="col">{{colstatus}}</th>
+                            <th scope="col">{{enforcementheading}}</th>
+                            <th scope="col" class="antivirus-verdict-actions"><span class="visually-hidden">{{#str}}coldetails, antivirus_verdict{{/str}}</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#enforcementevents}}
+                            <tr>
+                                <td class="antivirus-verdict-ov-time" data-label="{{colcompleted}}">{{time}}</td>
+                                <td class="antivirus-verdict-ov-col-file" data-label="{{colfilename}}">{{filename}}</td>
+                                <td data-label="{{#str}}colcourse, antivirus_verdict{{/str}}">{{#hascourse}}{{course}}{{/hascourse}}{{^hascourse}}{{#str}}valueempty, antivirus_verdict{{/str}}{{/hascourse}}</td>
+                                <td data-label="{{colstatus}}">{{status}}</td>
+                                <td data-label="{{enforcementheading}}">{{enforcement}}</td>
+                                <td class="antivirus-verdict-actions" data-label="{{#str}}coldetails, antivirus_verdict{{/str}}"><a class="antivirus-verdict-ov-link" href="{{viewurl}}">{{viewlabel}}</a></td>
+                            </tr>
+                        {{/enforcementevents}}
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        {{/hasenforcementevents}}
+        {{^hasenforcementevents}}
+            <div class="antivirus-verdict-ov-card antivirus-verdict-ov-enforce" role="status">
+                <div class="antivirus-verdict-ov-enforce-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2 3 6v6c0 5 3.8 8.4 9 10 5.2-1.6 9-5 9-10V6l-9-4Z"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                </div>
+                <div class="antivirus-verdict-ov-enforce-title">{{enforcementemptytext}}</div>
+                <div class="antivirus-verdict-ov-enforce-desc">{{enforcementemptyhint}}</div>
+            </div>
+        {{/hasenforcementevents}}
+    </section>
+
+    <section class="antivirus-verdict-ov-section" aria-labelledby="antivirus-verdict-ov-errors">
+        <div class="antivirus-verdict-ov-section-head">
+            <h2 class="antivirus-verdict-ov-section-title" id="antivirus-verdict-ov-errors">{{errorbreakdownheading}}</h2>
+            {{#errorbreakdownnote}}<div class="antivirus-verdict-ov-section-note">{{errorbreakdownnote}}</div>{{/errorbreakdownnote}}
+        </div>
+        <div class="antivirus-verdict-ov-card">
+            {{#haserrorbreakdown}}
+                {{#errorrows}}
+                    <div class="antivirus-verdict-ov-kv antivirus-verdict-ov-kv--error">
+                        <span class="antivirus-verdict-ov-kv-l antivirus-verdict-ov-kv-l--wide">{{label}}</span>
+                        <span class="antivirus-verdict-ov-kv-v antivirus-verdict-ov-kv-v--num">{{count}}</span>
+                    </div>
+                    <div class="antivirus-verdict-ov-track antivirus-verdict-ov-track--error" aria-hidden="true">
+                        <div class="antivirus-verdict-ov-fill antivirus-verdict-ov-fill--grey" style="width: {{widthpct}}{{^widthpct}}0{{/widthpct}}%;"></div>
+                    </div>
+                {{/errorrows}}
+                {{#errorbreakdowntop}}
+                    <p class="antivirus-verdict-ov-caveat">{{errorbreakdowntop}}</p>
+                {{/errorbreakdowntop}}
+            {{/haserrorbreakdown}}
+            {{^haserrorbreakdown}}
+                <p class="antivirus-verdict-ov-empty" role="status">{{errorbreakdownempty}}</p>
+            {{/haserrorbreakdown}}
+        </div>
+    </section>
+
+    <section class="antivirus-verdict-ov-section" aria-labelledby="antivirus-verdict-ov-recent">
+        <div class="antivirus-verdict-ov-section-head">
+            <h2 class="antivirus-verdict-ov-section-title" id="antivirus-verdict-ov-recent">{{recentheading}}</h2>
+        </div>
+        {{#hasrecent}}
+            <div class="antivirus-verdict-ov-tablecard">
+                <div class="antivirus-verdict-ov-tablehead">
+                    <div class="antivirus-verdict-ov-card-sub">{{recentintro}}</div>
+                    <div class="antivirus-verdict-ov-chips" data-antivirus-verdict="ov-period" role="group" aria-label="{{periodgroup}}">
+                        <button type="button" class="antivirus-verdict-ov-chip is-active" data-showing="{{showinglabel}}" aria-pressed="true">{{chip7d}}</button>
+                        <button type="button" class="antivirus-verdict-ov-chip" data-showing="{{showing24label}}" aria-pressed="false">{{chip24h}}</button>
+                    </div>
+                </div>
+                <div class="antivirus-verdict-ov-tablescroll">
+                <table class="table generaltable antivirus-verdict-ov-table antivirus-verdict-ov-table--recent">
+                    <caption class="visually-hidden">{{recentheading}}</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col" class="antivirus-verdict-ov-sortable" data-sort="text" tabindex="0" aria-sort="none">{{colfilename}}<span class="antivirus-verdict-ov-sort" aria-hidden="true">↕</span></th>
+                            <th scope="col" class="antivirus-verdict-ov-sortable" data-sort="text" tabindex="0" aria-sort="none">{{colsource}}<span class="antivirus-verdict-ov-sort" aria-hidden="true">↕</span></th>
+                            <th scope="col" class="antivirus-verdict-ov-sortable" data-sort="text" tabindex="0" aria-sort="none">{{colstatus}}<span class="antivirus-verdict-ov-sort" aria-hidden="true">↕</span></th>
+                            <th scope="col" class="antivirus-verdict-ov-sortable" data-sort="detect" tabindex="0" aria-sort="none">{{coldetection}}<span class="antivirus-verdict-ov-sort" aria-hidden="true">↕</span></th>
+                            <th scope="col" class="antivirus-verdict-ov-sortable" data-sort="time" tabindex="0" aria-sort="none">{{colqueued}}<span class="antivirus-verdict-ov-sort" aria-hidden="true">↕</span></th>
+                            <th scope="col" class="antivirus-verdict-ov-sortable" data-sort="time" tabindex="0" aria-sort="none">{{colcompleted}}<span class="antivirus-verdict-ov-sort" aria-hidden="true">↕</span></th>
+                            <th scope="col" class="antivirus-verdict-actions"><span class="visually-hidden">{{#str}}coldetails, antivirus_verdict{{/str}}</span></th>
+                        </tr>
+                    </thead>
+                    <tbody data-antivirus-verdict="ov-scans">
+                        {{#recent}}
+                            <tr>
+                                <td data-label="{{colfilename}}">
+                                    <div class="antivirus-verdict-ov-file">
+                                        <div class="antivirus-verdict-ov-fileicon" aria-hidden="true">
+                                            {{#fileisarchive}}
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                            {{/fileisarchive}}
+                                            {{#fileisimage}}
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="m21 15-4.5-4.5L9 18"/></svg>
+                                            {{/fileisimage}}
+                                            {{^fileisarchive}}{{^fileisimage}}
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg>
+                                            {{/fileisimage}}{{/fileisarchive}}
+                                        </div>
+                                        <div class="antivirus-verdict-ov-filetext">
+                                            <div class="antivirus-verdict-ov-filename" title="{{filename}}">{{filename}}</div>
+                                            {{#hascontext}}<div class="antivirus-verdict-ov-filectx" title="{{contextline}}">{{contextline}}</div>{{/hascontext}}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td data-label="{{colsource}}">{{source}}</td>
+                                <td data-label="{{colstatus}}"><span class="antivirus-verdict-ov-spill antivirus-verdict-ov-spill--{{statuspill}}"><span class="antivirus-verdict-ov-spill-d"></span>{{status}}</span></td>
+                                <td data-label="{{coldetection}}" data-detect="{{detectsort}}">
+                                    {{#hasdetection}}
+                                        <span class="antivirus-verdict-ov-detect"><span class="antivirus-verdict-ov-detect-z">{{detectmalicious}}</span><span class="antivirus-verdict-ov-detect-t">/{{detecttotal}}</span></span>
+                                    {{/hasdetection}}
+                                    {{^hasdetection}}
+                                        <span class="antivirus-verdict-ov-detect"><span class="antivirus-verdict-ov-detect-dash">{{result}}</span></span>
+                                    {{/hasdetection}}
+                                </td>
+                                <td class="antivirus-verdict-ov-time" data-label="{{colqueued}}" data-ts="{{queuedts}}">{{queued}}</td>
+                                <td class="antivirus-verdict-ov-time" data-label="{{colcompleted}}" data-ts="{{completedts}}">{{completed}}</td>
+                                <td class="antivirus-verdict-actions" data-label="{{#str}}coldetails, antivirus_verdict{{/str}}"><a class="antivirus-verdict-ov-link" href="{{viewurl}}">{{viewshort}}</a></td>
+                            </tr>
+                        {{/recent}}
+                    </tbody>
+                </table>
+                </div>
+                <div class="antivirus-verdict-ov-tablefoot">
+                    <span class="antivirus-verdict-ov-count" data-antivirus-verdict="ov-count">{{showinglabel}}</span>
+                    <a class="antivirus-verdict-ov-link" href="{{historyurl}}">{{viewallhistoryarrow}}</a>
+                </div>
+            </div>
+        {{/hasrecent}}
+        {{^hasrecent}}
+            <div class="antivirus-verdict-ov-card">
+                <p class="antivirus-verdict-ov-empty" role="status">{{emptymessage}}</p>
+            </div>
+        {{/hasrecent}}
+    </section>
+
+    {{#hasactions}}
+    <section class="antivirus-verdict-ov-section antivirus-verdict-ov-section--last" aria-labelledby="antivirus-verdict-ov-actions">
+        <div class="antivirus-verdict-ov-section-head">
+            <h2 class="antivirus-verdict-ov-section-title" id="antivirus-verdict-ov-actions">{{actionsheading}}</h2>
+        </div>
+        <div class="antivirus-verdict-ov-actions">
+            {{#actions}}
+                <a class="antivirus-verdict-ov-qa{{#primary}} antivirus-verdict-ov-qa--primary{{/primary}}" href="{{url}}">{{label}}</a>
+            {{/actions}}
+        </div>
+    </section>
+    {{/hasactions}}
+</div>

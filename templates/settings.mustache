@@ -1,0 +1,639 @@
+{{!
+    @template antivirus_verdict/settings
+
+    Dark-shell settings. The API key is present only after a confirmed reveal.
+
+    Example context (json):
+    {
+        "pagetitle": "Settings",
+        "actionurl": "/lib/antivirus/verdict/configure.php",
+        "sesskey": "abc",
+        "privacyheading": "External scanning and privacy",
+        "privacydesc": "VirusTotal is an external service.",
+        "apidocslead": "Read the",
+        "apidocs": "official API documentation",
+        "apidocsurl": "https://docs.virustotal.com/reference/overview",
+        "credentialsheading": "VirusTotal API credentials",
+        "credentialsdesc": "Each site needs its own key.",
+        "operationheading": "How scanning works",
+        "operationdesc": "Scanning is disabled by default.",
+        "scanningheading": "Scanning",
+        "jumpnavlabel": "Settings sections",
+        "jumpprivacy": "Privacy",
+        "jumpcredentials": "Credentials",
+        "jumphow": "How it works",
+        "jumpscanning": "Scanning",
+        "apikeylabel": "VirusTotal API key",
+        "apikeyhelp": "Visible only to site administrators.",
+        "apikeyneverlogged": "Never included in scan records.",
+        "apikeymasked": "••••••••",
+        "nokeyconfigured": "No API key is saved yet.",
+        "revealkey": "Show key",
+        "hidekey": "Hide key",
+        "editkey": "Edit key",
+        "haskey": true,
+        "keyrevealed": false,
+        "apikey": "",
+        "testconnectionurl": "/lib/antivirus/verdict/test_connection.php",
+        "testconnectionlabel": "Open the connection test page",
+        "enabledlabel": "Enable VirusTotal scanning",
+        "enableddesc": "Disabled by default.",
+        "enabledkey": "antivirus_verdict | enabled",
+        "enabled": false,
+        "assignscanlabel": "Automatically scan assignment submissions",
+        "assignscandesc": "Requires scanning enabled.",
+        "assignscankey": "antivirus_verdict | assignscan",
+        "assignscan": false,
+        "maxfilesizelabel": "Maximum file size for scanning",
+        "maxfilesizedesc": "Default 100 MB.",
+        "maxfilesizekey": "antivirus_verdict | maxfilesize",
+        "maxfilesize": 100,
+        "maxfilesizecap": 100,
+        "maxfilesizeunit": "MB",
+        "policyallow": "Allow upload",
+        "policyblock": "Block upload",
+        "policyreport": "Report only",
+        "policyquarantine": "Quarantine",
+        "policyreportonly": "Report only (async)",
+        "unknownpolicyallow": true,
+        "unknownpolicyblock": false,
+        "suspiciouspolicyallow": true,
+        "suspiciouspolicyblock": false,
+        "providererrorpolicyblock": true,
+        "providererrorpolicyreport": false,
+        "asyncenforcementquarantine": true,
+        "asyncenforcementreport": false,
+        "configuredlabel": "Credentials",
+        "configuredyes": "Configured",
+        "configuredno": "Not configured",
+        "configureddesc": "Site API key status.",
+        "antivirusenabledlabel": "Antivirus",
+        "antivirusenabled": true,
+        "savelabel": "Save changes"
+    }
+}}
+<div class="antivirus-verdict-page">
+    <div class="antivirus-verdict-topline">
+        <div>
+            <h1 class="antivirus-verdict-title"><span class="antivirus-verdict-rule"></span>{{pagetitle}}</h1>
+        </div>
+    </div>
+
+    <nav class="antivirus-verdict-jump-nav" aria-label="{{jumpnavlabel}}">
+        <a class="antivirus-verdict-jump-chip" href="#antivirus-verdict-panel-privacy">{{jumpprivacy}}</a>
+        <a class="antivirus-verdict-jump-chip" href="#antivirus-verdict-panel-credentials">{{jumpcredentials}}</a>
+        <a class="antivirus-verdict-jump-chip" href="#antivirus-verdict-panel-how">{{jumphow}}</a>
+        <a class="antivirus-verdict-jump-chip" href="#antivirus-verdict-panel-scanning">{{jumpscanning}}</a>
+        <a class="antivirus-verdict-jump-chip" href="#antivirus-verdict-panel-archive">{{jumparchive}}</a>
+        <a class="antivirus-verdict-jump-chip" href="#antivirus-verdict-panel-policies">{{jumppolicies}}</a>
+        <a class="antivirus-verdict-jump-chip" href="#antivirus-verdict-panel-notifications">{{jumpnotifications}}</a>
+        <a class="antivirus-verdict-jump-chip" href="#antivirus-verdict-panel-storage">{{jumpstorage}}</a>
+        <a class="antivirus-verdict-jump-chip" href="#antivirus-verdict-panel-access">{{jumpaccess}}</a>
+    </nav>
+
+    <section class="antivirus-verdict-panel" id="antivirus-verdict-panel-privacy">
+        <h2 class="antivirus-verdict-panel-title">{{privacyheading}}</h2>
+        <p class="antivirus-verdict-copy">
+            {{privacydesc}}
+            {{apidocslead}}
+            <a href="{{apidocsurl}}" rel="noopener noreferrer" target="_blank">{{apidocs}}</a>.
+        </p>
+    </section>
+
+    <form method="post" action="{{actionurl}}" class="antivirus-verdict-settings-form">
+        <input type="hidden" name="sesskey" value="{{sesskey}}">
+
+        <section class="antivirus-verdict-panel" id="antivirus-verdict-panel-credentials">
+            <h2 class="antivirus-verdict-panel-title">{{credentialsheading}}</h2>
+            <p class="antivirus-verdict-copy antivirus-verdict-copy-tight">{{credentialsdesc}}</p>
+            <div class="antivirus-verdict-field antivirus-verdict-key-field-wrap">
+                <label class="antivirus-verdict-field-label" for="antivirus-verdict-apikey-edit">
+                    {{apikeylabel}}
+                    <span class="antivirus-verdict-info-dot" title="{{apikeyhelp}}">i</span>
+                </label>
+                <div class="antivirus-verdict-key-field">
+                    <div class="antivirus-verdict-key-box" id="antivirus-verdict-key-box">
+                        {{#keyrevealed}}
+                            {{#haskey}}{{apikey}}{{/haskey}}
+                            {{^haskey}}{{nokeyconfigured}}{{/haskey}}
+                        {{/keyrevealed}}
+                        {{^keyrevealed}}{{apikeymasked}}{{/keyrevealed}}
+                    </div>
+                    <input
+                        type="text"
+                        name="apikey"
+                        id="antivirus-verdict-apikey-edit"
+                        class="antivirus-verdict-key-edit"
+                        value=""
+                        autocomplete="off"
+                        spellcheck="false"
+                        hidden
+                    >
+                    <div class="antivirus-verdict-key-actions">
+                        <button type="button" class="antivirus-verdict-icon-btn" data-antivirus-verdict="edit-key" title="{{editkey}}">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                                <path d="M12 20h9"/>
+                                <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+                            </svg>
+                            <span class="visually-hidden">{{editkey}}</span>
+                        </button>
+                        {{#keyrevealed}}
+                            <a class="antivirus-verdict-icon-btn" href="{{actionurl}}" title="{{hidekey}}">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                                    <path d="M3 3l18 18"/>
+                                    <path d="M10.6 10.6a3 3 0 0 0 4.2 4.2"/>
+                                    <path d="M9.9 5.1A11 11 0 0 1 12 5c7 0 11 7 11 7a18.5 18.5 0 0 1-4.2 4.8"/>
+                                    <path d="M6.1 6.1C3.1 8.1 1 12 1 12s4 7 11 7a10.4 10.4 0 0 0 4.2-.9"/>
+                                </svg>
+                                <span class="visually-hidden">{{hidekey}}</span>
+                            </a>
+                        {{/keyrevealed}}
+                        {{^keyrevealed}}
+                            <button type="submit" class="antivirus-verdict-icon-btn" name="settingsaction" value="reveal" title="{{revealkey}}">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                <span class="visually-hidden">{{revealkey}}</span>
+                            </button>
+                        {{/keyrevealed}}
+                    </div>
+                </div>
+                <p class="antivirus-verdict-key-never">{{apikeyneverlogged}}</p>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{configuredlabel}}</div>
+                    <div class="antivirus-verdict-setting-key">antivirus_verdict | apikey</div>
+                </div>
+                <div>
+                    <p class="antivirus-verdict-setting-help">
+                        {{#haskey}}{{configuredyes}}{{/haskey}}
+                        {{^haskey}}{{configuredno}}{{/haskey}}
+                        — {{configureddesc}}
+                    </p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{antivirusenabledlabel}}</div>
+                    <div class="antivirus-verdict-setting-key">$CFG-&gt;antiviruses</div>
+                </div>
+                <div>
+                    <p class="antivirus-verdict-setting-help">
+                        {{#antivirusenabled}}{{#str}}scannerstate_enabled, antivirus_verdict{{/str}}{{/antivirusenabled}}
+                        {{^antivirusenabled}}{{#str}}scannerstate_disabled, antivirus_verdict{{/str}}{{/antivirusenabled}}
+                        — {{antivirusenableddesc}}
+                    </p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-btn-row">
+                <a class="antivirus-verdict-btn" href="{{antivirusmanageurl}}">{{antivirusmanagelabel}}</a>
+                <a class="antivirus-verdict-btn antivirus-verdict-btn-primary" href="{{testconnectionurl}}">{{testconnectionlabel}}</a>
+            </div>
+        </section>
+
+        <section class="antivirus-verdict-panel" id="antivirus-verdict-panel-how">
+            <h2 class="antivirus-verdict-panel-title">{{operationheading}}</h2>
+            <p class="antivirus-verdict-copy">{{operationdesc}}</p>
+        </section>
+
+        <section class="antivirus-verdict-panel" id="antivirus-verdict-panel-scanning">
+            <h2 class="antivirus-verdict-panel-title">{{scanningheading}}</h2>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{scanscopelabel}}</div>
+                    <div class="antivirus-verdict-setting-key">{{scanscopekey}}</div>
+                </div>
+                <div>
+                    <select name="scanscope" class="antivirus-verdict-policy-select" id="antivirus-verdict-scanscope">
+                        <option value="everyupload"{{#scanscopeeveryupload}} selected{{/scanscopeeveryupload}}>{{scanscopeevery}}{{^scanscopeevery}}Every upload{{/scanscopeevery}}</option>
+                        <option value="selectedareas"{{#scopeselectedareas}} selected{{/scopeselectedareas}}>{{scopeselected}}{{^scopeselected}}Selected areas{{/scopeselected}}</option>
+                    </select>
+                    <p class="antivirus-verdict-setting-help">{{scanscopedesc}}</p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{assignscanlabel}}</div>
+                    <div class="antivirus-verdict-setting-key">{{assignscankey}}</div>
+                </div>
+                <div>
+                    <div class="antivirus-verdict-toggle-line">
+                        <input type="hidden" name="assignscan" value="0">
+                        <label class="antivirus-verdict-toggle">
+                            <input type="checkbox" name="assignscan" value="1"{{#assignscan}} checked{{/assignscan}}>
+                            <span class="antivirus-verdict-toggle-track"></span>
+                            <span class="visually-hidden">{{assignscanlabel}}</span>
+                        </label>
+                    </div>
+                    <p class="antivirus-verdict-setting-help">{{assignscandesc}}</p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{forumscanlabel}}</div>
+                </div>
+                <div>
+                    <div class="antivirus-verdict-toggle-line">
+                        <input type="hidden" name="forumscan" value="0">
+                        <label class="antivirus-verdict-toggle">
+                            <input type="checkbox" name="forumscan" value="1"{{#forumscan}} checked{{/forumscan}}>
+                            <span class="antivirus-verdict-toggle-track"></span>
+                        </label>
+                    </div>
+                    <p class="antivirus-verdict-setting-help">{{forumscandesc}}</p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{workshopscanlabel}}</div>
+                </div>
+                <div>
+                    <div class="antivirus-verdict-toggle-line">
+                        <input type="hidden" name="workshopscan" value="0">
+                        <label class="antivirus-verdict-toggle">
+                            <input type="checkbox" name="workshopscan" value="1"{{#workshopscan}} checked{{/workshopscan}}>
+                            <span class="antivirus-verdict-toggle-track"></span>
+                        </label>
+                    </div>
+                    <p class="antivirus-verdict-setting-help">{{workshopscandesc}}</p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{glossaryscanlabel}}</div>
+                </div>
+                <div>
+                    <div class="antivirus-verdict-toggle-line">
+                        <input type="hidden" name="glossaryscan" value="0">
+                        <label class="antivirus-verdict-toggle">
+                            <input type="checkbox" name="glossaryscan" value="1"{{#glossaryscan}} checked{{/glossaryscan}}>
+                            <span class="antivirus-verdict-toggle-track"></span>
+                        </label>
+                    </div>
+                    <p class="antivirus-verdict-setting-help">{{glossaryscandesc}}</p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{datascanlabel}}</div>
+                </div>
+                <div>
+                    <div class="antivirus-verdict-toggle-line">
+                        <input type="hidden" name="datascan" value="0">
+                        <label class="antivirus-verdict-toggle">
+                            <input type="checkbox" name="datascan" value="1"{{#datascan}} checked{{/datascan}}>
+                            <span class="antivirus-verdict-toggle-track"></span>
+                            <span class="visually-hidden">{{datascanlabel}}</span>
+                        </label>
+                    </div>
+                    <p class="antivirus-verdict-setting-help">{{datascandesc}}</p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{wikiscanlabel}}</div>
+                </div>
+                <div>
+                    <div class="antivirus-verdict-toggle-line">
+                        <input type="hidden" name="wikiscan" value="0">
+                        <label class="antivirus-verdict-toggle">
+                            <input type="checkbox" name="wikiscan" value="1"{{#wikiscan}} checked{{/wikiscan}}>
+                            <span class="antivirus-verdict-toggle-track"></span>
+                            <span class="visually-hidden">{{wikiscanlabel}}</span>
+                        </label>
+                    </div>
+                    <p class="antivirus-verdict-setting-help">{{wikiscandesc}}</p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{scormscanlabel}}</div>
+                </div>
+                <div>
+                    <div class="antivirus-verdict-toggle-line">
+                        <input type="hidden" name="scormscan" value="0">
+                        <label class="antivirus-verdict-toggle">
+                            <input type="checkbox" name="scormscan" value="1"{{#scormscan}} checked{{/scormscan}}>
+                            <span class="antivirus-verdict-toggle-track"></span>
+                            <span class="visually-hidden">{{scormscanlabel}}</span>
+                        </label>
+                    </div>
+                    <p class="antivirus-verdict-setting-help">{{scormscandesc}}</p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{questionscanlabel}}</div>
+                </div>
+                <div>
+                    <div class="antivirus-verdict-toggle-line">
+                        <input type="hidden" name="questionscan" value="0">
+                        <label class="antivirus-verdict-toggle">
+                            <input type="checkbox" name="questionscan" value="1"{{#questionscan}} checked{{/questionscan}}>
+                            <span class="antivirus-verdict-toggle-track"></span>
+                            <span class="visually-hidden">{{questionscanlabel}}</span>
+                        </label>
+                    </div>
+                    <p class="antivirus-verdict-setting-help">{{questionscandesc}}</p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{privatescanlabel}}</div>
+                    <div class="antivirus-verdict-setting-key">antivirus_verdict | privatescan</div>
+                </div>
+                <div>
+                    <div class="antivirus-verdict-toggle-line">
+                        <input type="hidden" name="privatescan" value="0">
+                        <label class="antivirus-verdict-toggle">
+                            <input type="checkbox" name="privatescan" value="1"{{#privatescan}} checked{{/privatescan}}>
+                            <span class="antivirus-verdict-toggle-track"></span>
+                            <span class="visually-hidden">{{privatescanlabel}}</span>
+                        </label>
+                    </div>
+                    <p class="antivirus-verdict-setting-help">{{privatescandesc}}</p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{restorescanlabel}}</div>
+                </div>
+                <div>
+                    <div class="antivirus-verdict-toggle-line">
+                        <input type="hidden" name="restorescan" value="0">
+                        <label class="antivirus-verdict-toggle">
+                            <input type="checkbox" name="restorescan" value="1"{{#restorescan}} checked{{/restorescan}}>
+                            <span class="antivirus-verdict-toggle-track"></span>
+                        </label>
+                    </div>
+                    <p class="antivirus-verdict-setting-help">{{restorescandesc}}</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="antivirus-verdict-panel" id="antivirus-verdict-panel-archive">
+            <h2 class="antivirus-verdict-panel-title">{{settingsgroup_archive}}</h2>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{archivescanlabel}}</div>
+                </div>
+                <div>
+                    <div class="antivirus-verdict-toggle-line">
+                        <input type="hidden" name="archivescan" value="0">
+                        <label class="antivirus-verdict-toggle">
+                            <input type="checkbox" name="archivescan" value="1"{{#archivescan}} checked{{/archivescan}}>
+                            <span class="antivirus-verdict-toggle-track"></span>
+                        </label>
+                    </div>
+                    <p class="antivirus-verdict-setting-help">{{archivescandesc}}</p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{archivemaxmemberslabel}}</div>
+                </div>
+                <div>
+                    <input class="antivirus-verdict-policy-select" type="number" min="1" max="500" name="archivemaxmembers" id="antivirus-verdict-archivemaxmembers" value="{{archivemaxmembers}}" aria-describedby="antivirus-verdict-archivemaxmembers-help">
+                    <p class="antivirus-verdict-setting-help" id="antivirus-verdict-archivemaxmembers-help">{{archivemaxmembersdesc}}</p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{archivemaxdepthlabel}}</div>
+                </div>
+                <div>
+                    <input class="antivirus-verdict-policy-select" type="number" min="0" max="5" name="archivemaxdepth" id="antivirus-verdict-archivemaxdepth" value="{{archivemaxdepth}}" aria-describedby="antivirus-verdict-archivemaxdepth-help">
+                    <p class="antivirus-verdict-setting-help" id="antivirus-verdict-archivemaxdepth-help">{{archivemaxdepthdesc}}</p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{archivemaxextractedlabel}}</div>
+                </div>
+                <div>
+                    <input class="antivirus-verdict-policy-select" type="number" min="1" max="1024" name="archivemaxextractedmb" id="antivirus-verdict-archivemaxextractedmb" value="{{archivemaxextractedmb}}" aria-describedby="antivirus-verdict-archivemaxextracted-help">
+                    <p class="antivirus-verdict-setting-help" id="antivirus-verdict-archivemaxextracted-help">{{archivemaxextracteddesc}}</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="antivirus-verdict-panel" id="antivirus-verdict-panel-policies">
+            <h2 class="antivirus-verdict-panel-title">{{settingsgroup_policies}}</h2>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{unknownpolicylabel}}</div>
+                    <div class="antivirus-verdict-setting-key">{{unknownpolicykey}}</div>
+                </div>
+                <div>
+                    <select name="unknownpolicy" class="antivirus-verdict-policy-select" id="antivirus-verdict-unknownpolicy">
+                        <option value="allow"{{#unknownpolicyallow}} selected{{/unknownpolicyallow}}>{{policyallow}}{{^policyallow}}Allow{{/policyallow}}</option>
+                        <option value="block"{{#unknownpolicyblock}} selected{{/unknownpolicyblock}}>{{policyblock}}{{^policyblock}}Block{{/policyblock}}</option>
+                    </select>
+                    <p class="antivirus-verdict-setting-help">{{unknownpolicydesc}}</p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{suspiciouspolicylabel}}</div>
+                    <div class="antivirus-verdict-setting-key">{{suspiciouspolicykey}}</div>
+                </div>
+                <div>
+                    <select name="suspiciouspolicy" class="antivirus-verdict-policy-select" id="antivirus-verdict-suspiciouspolicy">
+                        <option value="allow"{{#suspiciouspolicyallow}} selected{{/suspiciouspolicyallow}}>{{policyallow}}{{^policyallow}}Allow{{/policyallow}}</option>
+                        <option value="block"{{#suspiciouspolicyblock}} selected{{/suspiciouspolicyblock}}>{{policyblock}}{{^policyblock}}Block{{/policyblock}}</option>
+                    </select>
+                    <p class="antivirus-verdict-setting-help">{{suspiciouspolicydesc}}</p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{providererrorpolicylabel}}</div>
+                    <div class="antivirus-verdict-setting-key">{{providererrorpolicykey}}</div>
+                </div>
+                <div>
+                    <select name="providererrorpolicy" class="antivirus-verdict-policy-select" id="antivirus-verdict-providererrorpolicy">
+                        <option value="block"{{#providererrorpolicyblock}} selected{{/providererrorpolicyblock}}>{{policyblock}}{{^policyblock}}Block{{/policyblock}}</option>
+                        <option value="report"{{#providererrorpolicyreport}} selected{{/providererrorpolicyreport}}>{{policyreport}}{{^policyreport}}Report error (Moodle continues the upload){{/policyreport}}</option>
+                    </select>
+                    <p class="antivirus-verdict-setting-help">{{providererrorpolicydesc}}</p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{asyncenforcementlabel}}</div>
+                    <div class="antivirus-verdict-setting-key">{{asyncenforcementkey}}</div>
+                </div>
+                <div>
+                    <select name="asyncenforcement" class="antivirus-verdict-policy-select" id="antivirus-verdict-asyncenforcement">
+                        <option value="quarantine"{{#asyncenforcementquarantine}} selected{{/asyncenforcementquarantine}}>{{policyquarantine}}{{^policyquarantine}}Quarantine and remove the file{{/policyquarantine}}</option>
+                        <option value="report"{{#asyncenforcementreport}} selected{{/asyncenforcementreport}}>{{policyreportonly}}{{^policyreportonly}}Report only (leave the file in place){{/policyreportonly}}</option>
+                    </select>
+                    <p class="antivirus-verdict-setting-help">{{asyncenforcementdesc}}</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="antivirus-verdict-panel" id="antivirus-verdict-panel-notifications">
+            <h2 class="antivirus-verdict-panel-title">{{settingsgroup_notifications}}</h2>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{notifymaliciouslabel}}</div>
+                </div>
+                <div>
+                    <div class="antivirus-verdict-toggle-line">
+                        <input type="hidden" name="notifymalicious" value="0">
+                        <label class="antivirus-verdict-toggle">
+                            <input type="checkbox" name="notifymalicious" value="1"{{#notifymalicious}} checked{{/notifymalicious}}>
+                            <span class="antivirus-verdict-toggle-track"></span>
+                        </label>
+                    </div>
+                    <p class="antivirus-verdict-setting-help">{{notifymaliciousdesc}}</p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{notifysuspiciouslabel}}</div>
+                </div>
+                <div>
+                    <div class="antivirus-verdict-toggle-line">
+                        <input type="hidden" name="notifysuspicious" value="0">
+                        <label class="antivirus-verdict-toggle">
+                            <input type="checkbox" name="notifysuspicious" value="1"{{#notifysuspicious}} checked{{/notifysuspicious}}>
+                            <span class="antivirus-verdict-toggle-track"></span>
+                            <span class="visually-hidden">{{notifysuspiciouslabel}}</span>
+                        </label>
+                    </div>
+                    <p class="antivirus-verdict-setting-help">{{notifysuspiciousdesc}}</p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{notifyerrorlabel}}</div>
+                </div>
+                <div>
+                    <div class="antivirus-verdict-toggle-line">
+                        <input type="hidden" name="notifyerror" value="0">
+                        <label class="antivirus-verdict-toggle">
+                            <input type="checkbox" name="notifyerror" value="1"{{#notifyerror}} checked{{/notifyerror}}>
+                            <span class="antivirus-verdict-toggle-track"></span>
+                            <span class="visually-hidden">{{notifyerrorlabel}}</span>
+                        </label>
+                    </div>
+                    <p class="antivirus-verdict-setting-help">{{notifyerrordesc}}</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="antivirus-verdict-panel" id="antivirus-verdict-panel-storage">
+            <h2 class="antivirus-verdict-panel-title">{{settingsgroup_storage}}</h2>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{maxfilesizelabel}}</div>
+                    <div class="antivirus-verdict-setting-key">{{maxfilesizekey}}</div>
+                </div>
+                <div>
+                    <div class="antivirus-verdict-size-field">
+                        <input type="number" name="maxfilesize" value="{{maxfilesize}}" min="1" max="{{maxfilesizecap}}" step="1">
+                        <span>{{maxfilesizeunit}}</span>
+                    </div>
+                    <p class="antivirus-verdict-setting-help">{{maxfilesizedesc}}</p>
+                </div>
+            </div>
+
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{scanretentiondayslabel}}</div>
+                    <div class="antivirus-verdict-setting-key">{{scanretentiondayskey}}</div>
+                </div>
+                <div>
+                    <div class="antivirus-verdict-size-field">
+                        <input type="number" name="scanretentiondays" value="{{scanretentiondays}}" min="-1" step="1">
+                        <span>{{scanretentiondaysunit}}</span>
+                    </div>
+                    <p class="antivirus-verdict-setting-help">{{scanretentiondaysdesc}}</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="antivirus-verdict-panel" id="antivirus-verdict-panel-access">
+            <h2 class="antivirus-verdict-panel-title">{{teacheraccessheading}}</h2>
+            <div class="antivirus-verdict-setting-row">
+                <div>
+                    <div class="antivirus-verdict-setting-label">{{teacheraccesslabel}}</div>
+                    <div class="antivirus-verdict-setting-key">antivirus_verdict | teacheraccess</div>
+                </div>
+                <div>
+                    <div class="antivirus-verdict-toggle-line">
+                        <input type="hidden" name="teacheraccess" value="0">
+                        <label class="antivirus-verdict-toggle">
+                            <input
+                                type="checkbox"
+                                name="teacheraccess"
+                                value="1"
+                                data-antivirus-verdict="teacher-access"
+                                {{#teacheraccess}}checked{{/teacheraccess}}
+                            >
+                            <span class="antivirus-verdict-toggle-track"></span>
+                            <span class="visually-hidden">{{teacheraccesslabel}}</span>
+                        </label>
+                    </div>
+                    <p class="antivirus-verdict-setting-help">{{teacheraccessdesc}}</p>
+                </div>
+            </div>
+
+            <div id="antivirus-verdict-teacher-pages" class="antivirus-verdict-teacher-pages"{{^teacheraccess}} hidden{{/teacheraccess}}>
+                <p class="antivirus-verdict-copy antivirus-verdict-copy-tight">{{teacherpagesdesc}}</p>
+                {{#teacherpages}}
+                    <div class="antivirus-verdict-setting-row">
+                        <div>
+                            <div class="antivirus-verdict-setting-label">{{label}}</div>
+                            <div class="antivirus-verdict-setting-key">antivirus_verdict | {{name}}</div>
+                        </div>
+                        <div>
+                            <div class="antivirus-verdict-toggle-line">
+                                <input type="hidden" name="{{name}}" value="0">
+                                <label class="antivirus-verdict-toggle">
+                                    <input type="checkbox" name="{{name}}" value="1"{{#checked}} checked{{/checked}}>
+                                    <span class="antivirus-verdict-toggle-track"></span>
+                                    <span class="visually-hidden">{{label}}</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                {{/teacherpages}}
+            </div>
+        </section>
+
+        <section class="antivirus-verdict-panel">
+            <button type="submit" class="antivirus-verdict-btn antivirus-verdict-btn-primary" name="settingsaction" value="save">{{savelabel}}</button>
+        </section>
+    </form>
+</div>

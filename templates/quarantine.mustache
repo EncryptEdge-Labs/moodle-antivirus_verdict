@@ -1,0 +1,63 @@
+{{!
+    @template antivirus_verdict/quarantine
+
+    Quarantine inventory list.
+
+    Example context (json):
+    {
+        "pagetitle": "Quarantine",
+        "pagesubtitle": "Enforcement outcomes",
+        "coreenabled": true,
+        "quarantinedcount": 0,
+        "corereporturl": "#",
+        "corereportlabel": "Core report",
+        "isempty": true,
+        "emptymessage": "No quarantined files."
+    }
+}}
+<div class="antivirus-verdict-page">
+    <div class="antivirus-verdict-topline">
+        <div>
+            <h1 class="antivirus-verdict-title"><span class="antivirus-verdict-rule"></span>{{pagetitle}}</h1>
+            <p class="antivirus-verdict-subtitle">{{pagesubtitle}}</p>
+        </div>
+    </div>
+    {{^coreenabled}}
+        <div class="antivirus-verdict-banner" role="status">{{coredisabledmessage}}</div>
+    {{/coreenabled}}
+    <p class="antivirus-verdict-mini-stats">
+        <span>{{quarantinedcount}} {{pagetitle}}</span>
+        <a href="{{corereporturl}}">{{corereportlabel}}</a>
+    </p>
+    {{#isempty}}
+        <div class="antivirus-verdict-banner" role="status">{{emptymessage}}</div>
+    {{/isempty}}
+    {{^isempty}}
+        <div class="antivirus-verdict-panel antivirus-verdict-panel--flush">
+            <table class="table generaltable antivirus-verdict-table">
+                <thead>
+                    <tr>
+                        <th scope="col">{{columnfile}}</th>
+                        <th scope="col">{{columnstatus}}</th>
+                        <th scope="col">{{columnenforcement}}</th>
+                        <th scope="col">{{columntime}}</th>
+                        <th scope="col">{{columncore}}</th>
+                        <th scope="col" class="antivirus-verdict-actions"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#rows}}
+                        <tr>
+                            <td class="antivirus-verdict-filename" data-label="{{columnfile}}">{{filename}}</td>
+                            <td data-label="{{columnstatus}}">{{status}}</td>
+                            <td data-label="{{columnenforcement}}">{{enforcement}}</td>
+                            <td class="antivirus-verdict-time" data-label="{{columntime}}">{{time}}</td>
+                            <td data-label="{{columncore}}">{{#hascore}}{{coretime}}{{/hascore}}{{^hascore}}—{{/hascore}}</td>
+                            <td class="antivirus-verdict-actions" data-label="{{#str}}coldetails, antivirus_verdict{{/str}}"><a href="{{viewurl}}">{{viewlabel}}</a></td>
+                        </tr>
+                    {{/rows}}
+                </tbody>
+            </table>
+        </div>
+    {{/isempty}}
+</div>
