@@ -2,42 +2,55 @@
 
 ## Current release
 
-**1.0.0** (`2026092801`, `MATURITY_STABLE`). Official Moodle support **4.5–5.2**. VirusTotal is the implemented provider.
+| | |
+| - | - |
+| **Version** | 1.0.0 (build **`2026101100`**, `MATURITY_STABLE`) |
+| **Moodle** | **4.5, 5.0, 5.1, 5.2** (`supported` 405–502 in `version.php`) |
+| **Provider** | VirusTotal API v3 (only implemented provider) |
 
-Completed for this release:
+## Completed (1.0.0)
 
-* Native Moodle antivirus scanner and VirusTotal API v3 client
-* Synchronous hash-lookup gate with unknown / suspicious / provider-error / late-malicious policies
-* HTTP 429 and circuit-open treated as queued pending (not malware, not clean)
-* Async `process_scan` with retries, Retry-After cap, stale recovery
-* Availability circuit (5 / 120s / half-open probe)
-* Late File API identity enforcement
-* Optional assignment and other activity backfill
-* Manual scan, bulk scan, history, detail, overview
-* Archive ZIP/MBZ member scanning (optional)
-* Privacy API and retention purge
-* Coverage and quarantine inventories
-* Light/Dark theme, responsive product chrome, CSS radars bound to operational/circuit state
-* Administrator-controlled teacher access to selected Verdict pages
-* Professional administrator scan notifications (HTML + plain text)
+* Native antivirus scanner + synchronous hash-lookup gate and policies
+* Async `process_scan`, retries, stale recovery, availability circuit
+* VirusTotal client, optional operation ceilings, shared poll fan-out
+* Late File API enforcement and core quarantine integration
+* Optional archive member scanning (ZIP/MBZ)
+* Assignment/activity/restore/private-files backfill (optional toggles)
+* Manual scan, bulk scan, overview, history, detail, coverage, quarantine UI
+* Privacy API, retention purge, administrator notifications
+* Teacher-access toggles; light/dark product chrome
+* PHPUnit suite (556 tests × four branches, documented in `CHANGES.md`)
+* Behat functional suite (18 scenarios); optional live VT certification workflow (operator opt-in)
+* Build **2026101100** UI/accessibility fixes (tables, BS4 visually-hidden, radar pause without API key)
+
+## Remaining quality and release work
+
+* **Marketplace upload:** maintainer completes Moodle plugins directory listing (screenshots, public repo URL, support contact)—see checklist in [`CHANGES.md`](../CHANGES.md).
+* **Release ZIP:** rebuild from tagged commit when needed; validate with `scripts/validate-release-zip.php` (production packages exclude `docs/` by design).
+* **Full PHPUnit matrix:** re-run on all four branches after material code changes (use `--testsuite antivirus_verdict_testsuite`).
+* **Aggregate Behat:** multi-branch runner may flake on ChromeDriver; rely on per-branch 18/18 evidence or rerun single branch.
+* **In-app Settings:** operation guardrails section parity with native admin settings (ceilings remain on Moodle admin page today).
+* **Manual browser matrix:** responsive/device checks remain operator responsibility.
 
 ## Known limitations (not defects)
 
-* Direct File API writes that never call `antivirus\manager` are not scanned. That is Moodle core behaviour.
-* VirusTotal cannot retract data after a hash or file is submitted.
-* Verdict is not endpoint antivirus.
-* Archive scanning is ZIP/MBZ only; other containers are uninspectable, not clean.
-* Official CI in this tree is Moodle 5.2 / PHP 8.4. Moodle 4.5–5.1 share the same plugin source via junctions. Running this PHP 8.4 CLI against Moodle 4.5 bootstrap emits core `E_STRICT` deprecations and does not constitute a Verdict test failure. Re-run 4.5/5.0/5.1 PHPUnit on matching PHP versions.
+* Files never passing `\core\antivirus\manager` are not scanned (Moodle core).
+* Verdict is not endpoint antivirus and does not guarantee malware-free sites.
+* VirusTotal cannot retract submitted hashes/files.
+* Archives: ZIP/MBZ only; other formats are uninspectable, not implicitly clean.
+* SQL Server: site operation ceilings not enforced (reservation limitation).
+* Provider quotas, outages, and 429 rate limits affect pending queue depth.
 
-## Intentionally deferred
+## Future enhancements (planned, not implemented)
 
 * Additional analysis providers beyond VirusTotal
-* Scanning every File API write independently of Moodle’s antivirus manager
-* In-browser live VirusTotal certification as a default CI job
-* A plugin-owned master enable switch (native Moodle enablement remains authoritative)
+* Independent scanning of every File API write without manager involvement
+* Default CI live VirusTotal calls (remain opt-in by design)
+* Extra archive formats only with bounded extractors and explicit uninspectable handling
+* Support for new Moodle branches after they exist and are tested
 
-## Future (post-1.0)
+## Intentionally out of scope
 
-* Additional Moodle versions only after they exist and are tested
-* Optional extra archive formats only with bounded extractors and explicit uninspectable handling
-* Operator UX refinements that do not change the security model
+* Plugin-owned master enable switch (Moodle `$CFG->antiviruses` remains authoritative)
+* Shared VirusTotal quota or hosted keys from EncryptEdge Labs
+* Replacing Moodle core infected-files or antivirus management UI

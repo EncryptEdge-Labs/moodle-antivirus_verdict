@@ -65,8 +65,8 @@ class history_table extends \table_sql {
         $this->collapsible(false);
         $this->column_class('filename', 'antivirus-verdict-filename');
         $this->column_class('status', 'antivirus-verdict-verdict-cell');
-        $this->column_class('result', 'antivirus-verdict-mono');
-        $this->column_class('timecreated', 'antivirus-verdict-time');
+        $this->column_class('result', 'antivirus-verdict-col-detection');
+        $this->column_class('timecreated', 'antivirus-verdict-time antivirus-verdict-col-queued');
         $this->column_class('timecompleted', 'antivirus-verdict-time');
         $this->column_class('view', 'antivirus-verdict-actions');
         $this->set_columnsattributes([
@@ -205,7 +205,10 @@ class history_table extends \table_sql {
      */
     public function col_result(\stdClass $row): string {
         $label = scan_presenter::detection_compact($row);
-        return $label === '' ? get_string('valueempty', 'antivirus_verdict') : s($label);
+        if ($label === '') {
+            return get_string('valueempty', 'antivirus_verdict');
+        }
+        return \html_writer::span(s($label), 'antivirus-verdict-mono', ['title' => $label]);
     }
 
     /**

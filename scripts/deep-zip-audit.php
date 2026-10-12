@@ -4,7 +4,7 @@
  * CLI only — not plugin runtime.
  */
 define('CLI_SCRIPT', true);
-require 'D:/CODE/moodle-dev/public/config.php';
+require 'D:/CODE/Moodle/moodle-502/public/config.php';
 require_once($CFG->libdir . '/filelib.php');
 
 $zippath = $argv[1] ?? '';

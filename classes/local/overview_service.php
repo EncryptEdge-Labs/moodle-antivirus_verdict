@@ -135,14 +135,17 @@ class overview_service {
     /**
      * Whether the Overview VirusTotal radar should animate.
      *
-     * True only while the availability circuit is closed. Open, half-open,
-     * and provider-unavailable states are false. A lone 429 that has not
-     * opened the circuit still leaves the provider Available on the card,
-     * so the radar stays in motion to match that label.
+     * True only while the availability circuit is closed and an API key is saved.
+     * Open, half-open, missing-key, and provider-unavailable states are false.
+     * A lone 429 that has not opened the circuit still leaves the provider
+     * Available on the card, so the radar stays in motion to match that label.
      *
      * @return bool
      */
     public function provider_radar_active(): bool {
+        if (!$this->credentials->has_api_key()) {
+            return false;
+        }
         $health = $this->provider_health_snapshot();
         return ($health['state'] ?? '') === provider_health::STATE_CLOSED;
     }

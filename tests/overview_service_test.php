@@ -431,6 +431,10 @@ final class overview_service_test extends \advanced_testcase {
             $exported['scannerstatelabel'],
             get_string('scannerstate_configrequired', 'antivirus_verdict')
         );
+        $this->assertFalse($nkey->provider_radar_active());
+        $exported = (new overview($nkey, \context_system::instance()))->export_for_template($renderer);
+        $this->assertFalse($exported['providerradaractive']);
+        $this->assertSame($exported['providerradaractive'], $exported['providerpillon']);
 
         $health = new provider_health();
         $this->assertTrue($operational->provider_radar_active());

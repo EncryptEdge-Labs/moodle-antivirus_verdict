@@ -432,13 +432,22 @@
                 <div class="antivirus-verdict-ov-tablescroll">
                 <table class="table generaltable antivirus-verdict-ov-table antivirus-verdict-ov-table--recent">
                     <caption class="visually-hidden">{{recentheading}}</caption>
+                    <colgroup>
+                        <col>
+                        <col>
+                        <col>
+                        <col class="antivirus-verdict-col-detection">
+                        <col class="antivirus-verdict-col-queued">
+                        <col>
+                        <col>
+                    </colgroup>
                     <thead>
                         <tr>
                             <th scope="col" class="antivirus-verdict-ov-sortable" data-sort="text" tabindex="0" aria-sort="none">{{colfilename}}<span class="antivirus-verdict-ov-sort" aria-hidden="true">↕</span></th>
                             <th scope="col" class="antivirus-verdict-ov-sortable" data-sort="text" tabindex="0" aria-sort="none">{{colsource}}<span class="antivirus-verdict-ov-sort" aria-hidden="true">↕</span></th>
                             <th scope="col" class="antivirus-verdict-ov-sortable" data-sort="text" tabindex="0" aria-sort="none">{{colstatus}}<span class="antivirus-verdict-ov-sort" aria-hidden="true">↕</span></th>
-                            <th scope="col" class="antivirus-verdict-ov-sortable" data-sort="detect" tabindex="0" aria-sort="none">{{coldetection}}<span class="antivirus-verdict-ov-sort" aria-hidden="true">↕</span></th>
-                            <th scope="col" class="antivirus-verdict-ov-sortable" data-sort="time" tabindex="0" aria-sort="none">{{colqueued}}<span class="antivirus-verdict-ov-sort" aria-hidden="true">↕</span></th>
+                            <th scope="col" class="antivirus-verdict-ov-sortable antivirus-verdict-col-detection" data-sort="detect" tabindex="0" aria-sort="none">{{coldetection}}<span class="antivirus-verdict-ov-sort" aria-hidden="true">↕</span></th>
+                            <th scope="col" class="antivirus-verdict-ov-sortable antivirus-verdict-col-queued" data-sort="time" tabindex="0" aria-sort="none">{{colqueued}}<span class="antivirus-verdict-ov-sort" aria-hidden="true">↕</span></th>
                             <th scope="col" class="antivirus-verdict-ov-sortable" data-sort="time" tabindex="0" aria-sort="none">{{colcompleted}}<span class="antivirus-verdict-ov-sort" aria-hidden="true">↕</span></th>
                             <th scope="col" class="antivirus-verdict-actions"><span class="visually-hidden">{{#str}}coldetails, antivirus_verdict{{/str}}</span></th>
                         </tr>
@@ -467,7 +476,7 @@
                                 </td>
                                 <td data-label="{{colsource}}">{{source}}</td>
                                 <td data-label="{{colstatus}}"><span class="antivirus-verdict-ov-spill antivirus-verdict-ov-spill--{{statuspill}}"><span class="antivirus-verdict-ov-spill-d"></span>{{status}}</span></td>
-                                <td data-label="{{coldetection}}" data-detect="{{detectsort}}">
+                                <td class="antivirus-verdict-col-detection" data-label="{{coldetection}}" data-detect="{{detectsort}}" title="{{result}}">
                                     {{#hasdetection}}
                                         <span class="antivirus-verdict-ov-detect"><span class="antivirus-verdict-ov-detect-z">{{detectmalicious}}</span><span class="antivirus-verdict-ov-detect-t">/{{detecttotal}}</span></span>
                                     {{/hasdetection}}
@@ -475,7 +484,7 @@
                                         <span class="antivirus-verdict-ov-detect"><span class="antivirus-verdict-ov-detect-dash">{{result}}</span></span>
                                     {{/hasdetection}}
                                 </td>
-                                <td class="antivirus-verdict-ov-time" data-label="{{colqueued}}" data-ts="{{queuedts}}">{{queued}}</td>
+                                <td class="antivirus-verdict-ov-time antivirus-verdict-col-queued" data-label="{{colqueued}}" data-ts="{{queuedts}}">{{queued}}</td>
                                 <td class="antivirus-verdict-ov-time" data-label="{{colcompleted}}" data-ts="{{completedts}}">{{completed}}</td>
                                 <td class="antivirus-verdict-actions" data-label="{{#str}}coldetails, antivirus_verdict{{/str}}"><a class="antivirus-verdict-ov-link" href="{{viewurl}}">{{viewshort}}</a></td>
                             </tr>

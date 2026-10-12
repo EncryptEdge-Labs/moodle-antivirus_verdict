@@ -186,5 +186,11 @@ function xmldb_antivirus_verdict_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026092801, 'antivirus', 'verdict');
     }
 
+    if ($oldversion < 2026101100) {
+        // Presentation-only: Overview/History table layout, Bootstrap 4 visually-hidden shim,
+        // provider radar pause when no API key is saved.
+        upgrade_plugin_savepoint(true, 2026101100, 'antivirus', 'verdict');
+    }
+
     return true;
 }

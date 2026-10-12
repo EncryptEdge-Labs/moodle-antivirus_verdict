@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-EncryptEdge Labs supports the current stable release of Verdict for Moodle (`1.0.0`, Moodle 4.5–5.2). Older unpublished builds are not a security-support surface.
+EncryptEdge Labs supports the current stable release of Verdict for Moodle (**1.0.0**, build **`2026101100`**, Moodle **4.5–5.2**). Older unpublished builds are not a security-support surface.
 
 ## Report a vulnerability
 

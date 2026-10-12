@@ -1,105 +1,109 @@
 # Verdict for Moodle — Features
 
-Behaviour of features that exist in release 1.0.0. Configuration keys are Moodle plugin settings unless noted.
+Authoritative feature overview for release **1.0.0** (build **`2026101100`**, Moodle **4.5–5.2**). Implementation detail: [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
-## Native scanner
+## Native Moodle antivirus integration
 
-**Purpose:** Participate in Moodle’s antivirus manager.  
-**Success:** Explicit `SCAN_RESULT_*` for each upload that hits the manager.  
-**Failure:** Invalid path fails closed. Missing key / disabled plugin: Moodle does not call a configured scan.  
-**Limit:** Only manager call sites (repository upload, move_to_filepool, webservice upload, H5P ajax, and similar). `file_storage` itself does not scan.
+| | |
+| - | - |
+| **What** | `\core\antivirus\scanner` on manager call sites (repository upload, move to filepool, webservice upload, H5P ajax, and similar). |
+| **Enable** | Site administration → Plugins → Antivirus plugins → **Manage antivirus plugins** (add `verdict`). |
+| **Configure** | API key under Verdict settings; policies on admin settings page. |
+| **Limit** | Does not scan arbitrary `file_storage` writes that bypass the manager. |
 
 ## VirusTotal provider
 
-Site-owned API key. Hash lookup, file submit, poll analysis. The key is never stored on scan rows, task payloads, logs, or ordinary plugin pages. Site configuration users can reveal it on Settings.
+| | |
+| - | - |
+| **What** | Hash lookup at upload gate; file submit and analysis polling in the async worker. |
+| **Credential** | Site-owned API v3 key (`settings.php` / in-app Settings). |
+| **Security** | Key is not stored on scan rows, queued task payloads, or routine logs. Administrators may reveal the key on Settings after confirmation. |
+| **External** | Quota, availability, terms, and any costs are the site’s VirusTotal account—not included with the plugin. Verdict does **not** guarantee detection. |
 
 ## Upload gate policies
 
-| Policy | Default | Block | Allow / Report |
-| ------ | ------- | ----- | -------------- |
-| Unknown file | Allow | Refuse without claiming malware | Upload continues as pending |
+Configurable under antivirus Verdict settings (defaults in parentheses):
+
+| Policy | Default | Block behaviour | Allow / report |
+| ------ | ------- | --------------- | -------------- |
+| Unknown file | Allow | Refuse upload without claiming malware | Upload continues; scan **pending** |
 | Suspicious | Allow | Refuse without claiming confirmed malware | Upload continues as suspicious |
-| Provider error | Block | `scanner_exception` (core `SCAN_RESULT_ERROR` is fail-open) | Report returns `SCAN_RESULT_ERROR`; Moodle may still accept |
-| Late malicious | Quarantine | Quarantine + delete verified live file | Report-only records enforcement without delete |
+| Provider error | Block | `scanner_exception` | Report: `SCAN_RESULT_ERROR` (Moodle may still accept) |
+| Late malicious | Quarantine | Quarantine + delete verified live file | Report-only enforcement record |
 
-## Retry and rate limit
+## Async processing and deduplication
 
-Async retries up to 10. 429 uses `error_ratelimit`, honours Retry-After, cap 3600s. Gate 429/circuit-open: pending queue, not malware.
+Unknown hashes queue **`process_scan`**. Retries handle transient errors and HTTP 429 (Retry-After, capped). Completed hash reuse and joining an in-flight analysis avoid duplicate provider lookups/uploads where implemented.
 
-## Circuit breaker
+**Statuses:** clean, malicious, suspicious, pending, error, notscanned. Pending includes queued analysis and transient rate-limit/circuit queueing. None of unknown/pending/not scanned are shown or reused as **clean** for security decisions.
 
-5 availability failures open for 120s. Half-open: one probe. Auth/malformed-success do not open the circuit. Overview VirusTotal radar moves only while the circuit is **closed**.
+## Circuit breaker and overview indicators
 
-## Async analysis
-
-Pending unknown files are uploaded and polled until complete, retry exhausted, or stale recovery fails them. Malicious results trigger enforcement.
+Five availability failures open the circuit for 120 seconds; half-open allows one probe. Overview **scanner radar** animates when Verdict is operational (enabled + API key). **VirusTotal radar** animates when an API key is saved **and** the circuit is **closed**. Both are static when misconfigured, disabled, circuit open/half-open, or when the user prefers reduced motion.
 
 ## Archive scanning
 
-Setting `archivescan` (on by default in a new install). ZIP/MBZ only. Defaults: 50 members, depth 1, 200 MB extracted. Limits yield incomplete/error, never silent clean.
+Setting **`archivescan`** (on by default on new installs). **ZIP/MBZ** only; bounded member count, depth, and extracted size. Limits produce error/incomplete outcomes, never silent clean. With archives **off**, unknown containers may pass the gate without lookup; a **known** completed malicious container hash can still block via local reuse.
 
-When archive scanning is **off**, unknown archive containers on the upload gate are **allowed** without a provider lookup. A **known** completed malicious (or blocking suspicious) verdict for the container hash still blocks via local reuse. When archive scanning is **on**, containers are extracted and member files are scanned; parent status aggregates members (malicious > suspicious > error > pending/not scanned > clean).
+## Manual and bulk scan
+
+| | Manual | Bulk |
+| - | ------ | ---- |
+| **Capability** | `antivirus/verdict:scan` | Same (+ teacher page toggle if applicable) |
+| **Requires** | Saved API key | Saved API key |
+| **Requires in `$CFG->antiviruses`** | No | No |
+| **Scope** | File picker | Course files the operator can access |
+
+*Browser workflow:* covered by PHPUnit and Behat navigation/manual-scan scenarios; end-to-end live VT result in browser is **not** a default automated gate.
+
+## History, detail, coverage, quarantine
+
+| Page | Capability (typical) | Notes |
+| ---- | -------------------- | ----- |
+| Scan history / detail | `viewhistory` / reports | Filters; attribution; enforcement; related scans |
+| File coverage | `manage` (teachers if enabled) | Registry of how areas connect to Verdict—not core infected-files UI |
+| Quarantine inventory | `manage` | Verdict enforcement correlated with core quarantine data |
+
+## Assignment and activity backfill
+
+Optional toggles (assignment **`assignscan`** off by default; restore scan on by default): queue files on events/observers—**not** the native upload gate. Duplicate SHA-256 reuses stored verdicts where applicable.
 
 ## Teacher access
 
-Master setting **Show Verdict to teachers** (`teacheraccess`). When off, teachers do not see Verdict navigation; page toggles are hidden on Settings. When on, administrators choose which pages teachers may open: overview, scan a file, bulk scan, history, coverage (default off), quarantine. Settings remains `moodle/site:config` only. Teachers require normal Verdict capabilities in course context; repositories scope overview, history, and quarantine to courses the viewer may access. Manual scan uses the same form as administrators (no course picker); bulk scan lists only permitted courses.
+**Show Verdict to teachers** (`teacheraccess`) master toggle. When on, administrators choose visible pages (overview, manual scan, bulk, history, coverage, quarantine). Settings remains `moodle/site:config`. Data scoped by course access and capabilities.
 
 ## Notifications
 
-On terminal malicious, suspicious, or error outcomes (async path), Verdict sends Moodle messages (HTML + plain text) to **site administrators** via configured message providers. Copy includes course, detection counts, enforcement, and links where available. Teachers are not default recipients.
+Terminal malicious, suspicious, or error (async path): Moodle messages to **site administrators** (HTML + plain text). Teachers are not default recipients.
 
-## Verdict semantics (UI and storage)
+## Operation limits
 
-Statuses: **clean**, **malicious**, **suspicious**, **pending**, **error**, **notscanned**. Pending covers unknown hashes queued for analysis and transient 429/circuit-open queueing. **Not scanned** marks rows with no completed provider verdict (selected-area admission without lookup, or archive members not analysed). None of unknown/pending/not scanned are displayed or reused as clean for security decisions.
+Optional ceilings for lookups, uploads, and polls (`0` = unlimited). Shared polling uses one `get_analysis` per analysis id.
 
-## Provider operation limits
+## Retention and privacy
 
-Optional site ceilings for lookups, uploads, and polls (`0` = unlimited). Reservations increment immediately before HTTP; accounting increments after each attempt. Completed hash reuse and in-flight analysis joins do not consume lookup/upload budget. Shared polling performs one provider `get_analysis` per analysis id.
+Scheduled purge of terminal history after **`scanretentiondays`** (default 365; `-1` disables). Active and pending-enforcement malicious rows retained. Privacy export/delete covers plugin-owned data only.
 
-## Assignment automatic scanning
+## Settings surfaces
 
-Setting `assignscan` (off by default). Observes `assessable_submitted`. Queues submission files. Duplicate hash reuses verdicts. Drafts/hidden/missing files are handled without invented context.
+* Moodle admin: **Plugins → Antivirus plugins → Verdict for Moodle** (policies, backfill, archives, retention, ceilings, native config).
+* In-app **Settings** (`configure.php`): credentials, teacher access, notifications UX.
 
-## Other activity / restore / private files
+## Theme and accessibility
 
-Optional backfill flags: forum, workshop, glossary, data, wiki, SCORM, question bank, restore (on by default), private-files sweep. Same asynchronous analysis path; not the native upload gate.
-
-## Manual scan
-
-Capability `antivirus/verdict:scan`. File picker. Requires API key, not `$CFG->antiviruses`. Records initiating user.
-
-## Bulk scan
-
-Users with `antivirus/verdict:scan` (and teacher-access page enabled when applicable) enumerate course files and queue bounded work. Operator in `initiatedby`. Cannot scan files the user cannot access; course menu is scoped to permitted courses.
-
-## History and detail
-
-Filterable history (status, source, filename). Detail shows status, detection counts, attribution, enforcement, related scans. Course context must not rewrite Moodle navigation chrome.
-
-## Overview dashboard
-
-Protection banner, scanner/provider/quarantine/coverage cards, statistics, 7-day volume, detection mix, system health, enforcement table, recent scans, quick actions. Light/Dark via `--lv-*`. Scanner radar follows operational state; provider radar follows circuit closed.
-
-## Coverage and quarantine pages
-
-Manage-capability inventories of scanned file coverage and enforcement outcomes. They summarise Verdict data; they are not Moodle core infected-files UI.
-
-## Settings
-
-In-app Settings plus Moodle admin settings page. Native enablement remains on Manage antivirus plugins. Credentials, policies, activity backfill, archive limits, retention, notifications.
-
-## Privacy
-
-Export and delete plugin-owned scans and copies for a user. Does not claim to delete VirusTotal’s copy. Does not delete original assignment/forum files on a privacy request.
-
-## Retention
-
-Scheduled purge of terminal history after N days (default 365). `-1` disables. Active and pending-enforcement malicious rows are kept.
-
-## Theme, responsiveness, accessibility
-
-Light/Dark toggle (`localStorage` key `antivirus_verdict_theme`). Scoped CSS. Sidebar drawer under 1024px. Tables use History-style headers and intentional overflow. Status uses text plus colour. Reduced motion pauses radars.
+Light/Dark product chrome (`--lv-*` tokens). Bootstrap 4–compatible `.visually-hidden` shim for Moodle 4.5. Responsive sidebar; table layouts for overview recent scans and scan history (detection/queued columns). Status communicated with text and colour.
 
 ## Branding
 
-Moodle primary navigation: **Verdict** (`pluginbrand`). In-plugin sidebar: **Verdict for Moodle** (`brandproduct`). Logos: `pix/icon-dark-mode.png`, `pix/icon-light-mode.png`.
+Moodle nav label **Verdict**; in-product **Verdict for Moodle**. Icons: `pix/icon-dark-mode.png`, `pix/icon-light-mode.png`.
+
+## Automated test coverage (honest summary)
+
+| Layer | Coverage |
+| ----- | -------- |
+| PHPUnit `antivirus_verdict_testsuite` | **556** tests per supported branch (mocks/fakes; **6** skips including opt-in live VT). Historical four-branch PASS documented in [`CHANGES.md`](../CHANGES.md). |
+| Behat `@antivirus_verdict` | **18** functional scenarios per branch in separate runs; aggregate multi-branch runner may fail on WebDriver timeouts (environment). |
+| Live VirusTotal | Optional operator workflow (`VERDICT_LVT_OPT_IN=1`); not part of default regression. |
+| Manual browser | Operator smoke (including post–UI-fix reports); not fully automated. |
+
+Do not infer 100% UI or live-provider coverage from PHPUnit alone.

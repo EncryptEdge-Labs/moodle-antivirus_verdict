@@ -1,8 +1,11 @@
 # Dependencies and test artefacts
 /vendor/
+/node_modules/
 /.phpunit.cache
 /.phpunit.result.cache
 phpunit.xml
+phpunit.xml.bak
+phpcs.xml
 
 # Local environment and secrets — never commit VirusTotal credentials
 .env
@@ -19,19 +22,34 @@ auth.json
 .DS_Store
 Thumbs.db
 Desktop.ini
+*.swp
+*~
+.idea/
+.vscode/
+.cursor/
+
+# Archives except committed fixtures (ZIP and Moodle backups)
 *.zip
 !tests/fixtures/**/*.zip
+*.mbz
+!tests/fixtures/**/*.mbz
 *.log
 phpunit*.txt
 phpcs*.txt
 phpunit-last-run.txt
 
 # Local QA artefacts (keep docs/ in git for reviewers)
-/qa-logs
+/qa-logs/
+/dist/
 
+# Live VT ledger if PHPUnit cache is unavailable
+live_vt_request_ledger.json
 
-# Scripts
+# Local lab wrappers (machine-specific paths; see CHANGES.md)
+behat-*.bat
 build-release-zip.ps1
 qa.bat
 qa-all-moodles.bat
 
+# Optional local Behat host snippet (copy from scripts/behat-hosts-snippet.txt)
+scripts/behat-hosts-local.txt

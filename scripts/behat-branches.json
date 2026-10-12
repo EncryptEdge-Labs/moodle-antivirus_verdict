@@ -1,0 +1,52 @@
+{
+  "chromedriver": "C:\\Tools\\chromedriver\\chromedriver.exe",
+  "chrome_browser": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "405": {
+    "label": "Moodle 4.5",
+    "moodleroot": "D:\\CODE\\Moodle\\moodle-405",
+    "php": "C:\\Tools\\php83\\php.exe",
+    "behat_init": "admin\\tool\\behat\\cli\\init.php",
+    "behat_run": "admin\\tool\\behat\\cli\\run.php",
+    "behat_util": "admin\\tool\\behat\\cli\\util.php",
+    "behat_prefix": "b405_",
+    "behat_dataroot": "D:\\CODE\\Moodle\\MOODLE_405_BEHAT_DATA",
+    "behat_wwwroot": "http://behat405.local",
+    "plugin_path": "lib\\antivirus\\verdict"
+  },
+  "500": {
+    "label": "Moodle 5.0",
+    "moodleroot": "D:\\CODE\\Moodle\\moodle-500",
+    "php": "C:\\Tools\\php84\\php.exe",
+    "behat_init": "admin\\tool\\behat\\cli\\init.php",
+    "behat_run": "admin\\tool\\behat\\cli\\run.php",
+    "behat_util": "admin\\tool\\behat\\cli\\util.php",
+    "behat_prefix": "b500_",
+    "behat_dataroot": "D:\\CODE\\Moodle\\MOODLE_500_BEHAT_DATA",
+    "behat_wwwroot": "http://behat500.local",
+    "plugin_path": "lib\\antivirus\\verdict"
+  },
+  "501": {
+    "label": "Moodle 5.1",
+    "moodleroot": "D:\\CODE\\Moodle\\moodle-501",
+    "php": "C:\\Tools\\php83\\php.exe",
+    "behat_init": "public\\admin\\tool\\behat\\cli\\init.php",
+    "behat_run": "public\\admin\\tool\\behat\\cli\\run.php",
+    "behat_util": "public\\admin\\tool\\behat\\cli\\util.php",
+    "behat_prefix": "b501_",
+    "behat_dataroot": "D:\\CODE\\Moodle\\MOODLE_501_BEHAT_DATA",
+    "behat_wwwroot": "http://behat501.local",
+    "plugin_path": "public\\lib\\antivirus\\verdict"
+  },
+  "502": {
+    "label": "Moodle 5.2",
+    "moodleroot": "D:\\CODE\\Moodle\\moodle-502",
+    "php": "C:\\Tools\\php84\\php.exe",
+    "behat_init": "public\\admin\\tool\\behat\\cli\\init.php",
+    "behat_run": "public\\admin\\tool\\behat\\cli\\run.php",
+    "behat_util": "public\\admin\\tool\\behat\\cli\\util.php",
+    "behat_prefix": "b502_",
+    "behat_dataroot": "D:\\CODE\\Moodle\\MOODLE_502_BEHAT_DATA",
+    "behat_wwwroot": "http://127.0.0.1",
+    "plugin_path": "public\\lib\\antivirus\\verdict"
+  }
+}

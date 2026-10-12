@@ -1,0 +1,5 @@
+# Verdict Behat — add to C:\Windows\System32\drivers\etc\hosts (requires Administrator)
+127.0.0.1 behat405.local
+127.0.0.1 behat500.local
+127.0.0.1 behat501.local
+127.0.0.1 behat502.local

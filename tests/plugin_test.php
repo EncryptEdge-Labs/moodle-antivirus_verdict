@@ -94,7 +94,7 @@ final class plugin_test extends \advanced_testcase {
         global $CFG;
         $plugin = new \stdClass();
         include($CFG->dirroot . '/lib/antivirus/verdict/version.php');
-        $this->assertSame(2026092801, $plugin->version);
+        $this->assertSame(2026101100, $plugin->version);
         $this->assertSame('1.0.0', $plugin->release);
         $this->assertSame('antivirus_verdict', $plugin->component);
         $this->assertSame(\MATURITY_STABLE, $plugin->maturity);

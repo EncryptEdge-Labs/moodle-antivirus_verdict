@@ -3,7 +3,7 @@
 // CLI — not part of plugin runtime.
 define('CLI_SCRIPT', true);
 
-$config = 'D:/CODE/moodle-dev/public/config.php';
+$config = 'D:/CODE/Moodle/moodle-502/public/config.php';
 if (!is_readable($config)) {
     fwrite(STDERR, "Moodle config not found: $config\n");
     exit(2);

@@ -1,7 +1,7 @@
 <?php
 // CLI helper — not part of plugin runtime.
 define('CLI_SCRIPT', true);
-require 'D:/CODE/moodle-dev/public/config.php';
+require 'D:/CODE/Moodle/moodle-502/public/config.php';
 
 $zip = $argv[1] ?? '';
 if ($zip === '' || !is_readable($zip)) {
